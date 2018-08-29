@@ -116,95 +116,6 @@ int dy[]={0,1,0,-1};*/
 
 #define MAX 12
 
-
-
-
-
-
-string applyR1(string s,int k)
-{
-	int tmp[] = {2,3,4,5};
-
-	int pp1 = ((0-k)%4+4)%4;
-	int pp2 = ((1-k)%4+4)%4;
-	int pp3 = ((2-k)%4+4)%4;
-	int pp4 = ((3-k)%4+4)%4;
-
-	string tp = s;
-
-	int k1 = tmp[pp1];
-	int k2 = tmp[pp2];
-	int k3 = tmp[pp3];
-	int k4 = tmp[pp4];
-
-	tp[k1] = s[tmp[0]];
-	tp[k2] = s[tmp[1]];
-	tp[k3] = s[tmp[2]];
-	tp[k4] = s[tmp[3]]; 
-	//cout<<k1<<" "<<k2<<" "<<k3<<" "<<k4<<endl;
-
-
-	return tp;
-}
-
-
-
-string applyR2(string s,int k)
-{
-	int tmp[] = {0,2,1,4};
-
-	int pp1 = ((0-k)%4+4)%4;
-	int pp2 = ((1-k)%4+4)%4;
-	int pp3 = ((2-k)%4+4)%4;
-	int pp4 = ((3-k)%4+4)%4;
-
-	string tp = s;
-
-	int k1 = tmp[pp1];
-	int k2 = tmp[pp2];
-	int k3 = tmp[pp3];
-	int k4 = tmp[pp4];
-
-	tp[k1] = s[tmp[0]];
-	tp[k2] = s[tmp[1]];
-	tp[k3] = s[tmp[2]];
-	tp[k4] = s[tmp[3]]; 
-	//cout<<k1<<" "<<k2<<" "<<k3<<" "<<k4<<endl;
-
-
-	return tp;
-}
-
-string applyR3(string s,int k)
-{
-	int tmp[] = {0,3,1,5};
-
-	int pp1 = ((0-k)%4+4)%4;
-	int pp2 = ((1-k)%4+4)%4;
-	int pp3 = ((2-k)%4+4)%4;
-	int pp4 = ((3-k)%4+4)%4;
-
-	string tp = s;
-
-	int k1 = tmp[pp1];
-	int k2 = tmp[pp2];
-	int k3 = tmp[pp3];
-	int k4 = tmp[pp4];
-
-	tp[k1] = s[tmp[0]];
-	tp[k2] = s[tmp[1]];
-	tp[k3] = s[tmp[2]];
-	tp[k4] = s[tmp[3]]; 
-	//cout<<k1<<" "<<k2<<" "<<k3<<" "<<k4<<endl;
-
-
-	return tp;
-}
-
-
-
-
-
 int main()
 {
 /*The standard C++ I/O functions (cin/cout) flush the buffer 
@@ -219,36 +130,75 @@ the following lines in main function.*/
 	
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
-	int T;
-	string s1,s2;
-	string s = "345678";
-	// for(int i=0;i<4;i++){
-		
-	// 	s=applyR1(s,i);
-	// 	cout<<s<<endl;
-	// }
-	cin>>T;
-	
-	while(T--){
-		cin>>s1>>s2;
-		bool neq =true;
 
-		for(int i=0;i<4&&neq;i++){
-			for(int j=0;j<4&&neq;j++){
-				for(int k=0;k<4&&neq;k++){
-					string tmp = applyR1(s1,i);
-					tmp = applyR2(tmp,j);
-					tmp = applyR3(tmp,k);
-					neq = (tmp!=s2);
-				}
+	string in;
+	vs toks;
+
+	// /set<int>nodes;
+	vector<int>nds;
+
+	vi edges[27];
+
+	while(getline(cin,in)){
+		if(in=="#")break;
+		FOR(i,0,27)
+			edges[i].clear();
+		//nodes.clear();
+		nds.clear();
+
+
+		tokenize(in,toks,";");
+		
+		for(int i=0;i<toks.size();i++){
+			string cur = toks[i];
+
+			int curNode = cur[0]-'A';
+			if(find(nds.begin(), nds.end(),curNode)==nds.end())
+				nds.pb(curNode);
+
+
+			for(int i=2;i<cur.size();i++){
+				int nd = cur[i]-'A';
+				if(find(nds.begin(), nds.end(),nd)==nds.end())
+					nds.pb(nd);
+				edges[curNode].pb(nd);
+				edges[nd].pb(curNode);
 			}
 		}
+		sort(nds.begin(), nds.end());
 
-		if(neq)
-			cout<<"Not Equal"<<endl;
-		else
-			cout<<"Equal"<<endl;
-	}
+		int minBW = INF;
+		int order[10];
+
+		do {
+			int maxIndBW = -INF;
+  			for(int i=0;i<nds.size();i++)
+  			{	
+  				int mxBW = -INF;
+  				int curnode = nds[i];
+  				for(int j=0;j<edges[curnode].size();j++){
+  					int othernode = edges[curnode][j];
+  					int k;
+  					for(k=0;k<nds.size();k++)
+  						if(nds[k]==othernode)
+  							break;
+  					int bw = k-i;
+  					mxBW = max(mxBW,bw);
+  				}
+  				maxIndBW = max(maxIndBW,mxBW);
+  			}
+  			if(maxIndBW<minBW){
+  				minBW = maxIndBW;
+  				for(int i=0;i<nds.size();i++)
+  					order[i]=nds[i];
+  			}
+  		}while(std::next_permutation(nds.begin(),nds.end()));
+  		cout<<(char)(order[0]+'A');
+  		for(int i=1;i<nds.size();i++)
+  			cout<<" "<<(char)(order[i]+'A');
+  		cout<<" -> "<<minBW<<endl;
+  	}
+	
 
     return 0;
 }
