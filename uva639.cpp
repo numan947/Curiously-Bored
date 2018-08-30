@@ -30,8 +30,6 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 
 #define mapHas(t, x) (t.find(x) != t.end()) //for map
 #define vectHas(v,x) (find(v.begin(),v.end(),x)!=v.end()) //for vector
-#define setHas(t,x) (t.count(x)!=0)
-
 
 #define pb push_back
 #define pf push_front
@@ -138,7 +136,7 @@ the following lines in main function.*/
 	
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
-	
+		
 
     return 0;
 }

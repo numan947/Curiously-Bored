@@ -23,24 +23,17 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 
 
 #define ms(s, n) memset(s, n, sizeof(s))
-
 #define FOR(i, a, b) for (int i = (a); i < (b); ++i)
 #define FORd(i, a, b) for (int i = (a) - 1; i >= (b); --i)
 #define FORall(it, a) for (__typeof((a).begin()) it = (a).begin(); it != (a).end(); it++)
-
-#define mapHas(t, x) (t.find(x) != t.end()) //for map
-#define vectHas(v,x) (find(v.begin(),v.end(),x)!=v.end()) //for vector
-#define setHas(t,x) (t.count(x)!=0)
-
-
+#define sz(a) int((a).size())
+#define contains(t, x) (t.find(x) != t.end()) //for map
 #define pb push_back
 #define pf push_front
 #define mp make_pair
 #define fi first
 #define se second
 #define prec(n) fixed<<setprecision(n)
-
-
 
 //bit manipulation
 #define bit(n, i) (((n) >> (i)) & 1) //check bit
@@ -58,7 +51,6 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 #define numTrailZero(s) __builtin_ctz(s)
 #define numOnes(s) __builtin_popcount(s)
 #define parity(s) __builtin_parity(s)
-
 
 //shorthands
 typedef long long ll;
@@ -138,6 +130,50 @@ the following lines in main function.*/
 	
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
+
+	int tc,p,tmp;
+
+	ll par[20];
+	
+	vi pt;
+
+	cin>>tc;
+
+	while(tc--){
+		pt.clear();
+		cin>>p;
+		double need = 0;
+		FOR(i,0,p){
+			cin>>tmp;
+			need+=tmp;
+			pt.pb(tmp);
+			par[i]=0;
+		}
+		need = 1.0*need/2.0;
+		int msk=0;
+		ll lim = (1<<p);
+		while(msk<lim){
+			ll t = 0;
+			for(int i=0;i<p;i++)
+				if(bit(msk,i)){
+					t+=pt[i];
+				}
+			
+
+			if(t>need){
+				for(int i=0;i<p;i++)
+					if(bit(msk,i) && (t-pt[i]<=need))
+						par[i]++;
+			}
+			msk++;
+		}
+		for(int i=0;i<p;i++)
+			cout<<"party "<<(i+1)<<" has power index "<<par[i]<<endl;
+		cout<<endl;
+
+
+
+	}
 	
 
     return 0;
