@@ -122,6 +122,85 @@ int dy[]={0,1,0,-1};*/
 
 #define MAX 12
 
+string s[4];
+
+
+
+bool safe(int f,int n)
+{	
+	int dim = sqrt(n);
+	for(int i=0;i<n;i++){
+		if(bit(f,i)){ //is there a rook
+			int r = i/dim;
+			int c = i%dim;
+			if(s[r][c]=='X'){
+				return false;
+			}
+
+			for(int j=r+1;j<dim;j++){
+				int pos = dim*j+c;
+				if(bit(f,pos))
+					return false;
+				else if(s[j][c]=='X')
+					break;
+			}
+			for(int j=r-1;j>=0;j--){
+				int pos = dim*j+c;
+				if(bit(f,pos))
+					return false;
+				else if(s[j][c]=='X')
+					break;
+			}
+
+			for(int j=c-1;j>=0;j--){
+				int pos = dim*r+j;
+				if(bit(f,pos))
+					return false;
+				else if(s[r][j]=='X')
+					break;
+			}
+			for(int j=c+1;j<dim;j++){
+				int pos = dim*r+j;
+				if(bit(f,pos))
+					return false;
+				else if(s[r][j]=='X')
+					break;
+			}
+		}
+	}
+
+	return true;
+
+}
+
+
+
+
+
+void print(int config,int dim)
+{
+
+	cout<<config<<endl;
+
+	string tmp[4];
+	for(int i=0;i<dim;i++)
+		tmp[i]=s[i];
+	for(int i=0;i<dim*dim;i++){
+		if(bit(config,i)){
+			int r = i/dim;
+			int c = i%dim;
+
+			if(tmp[r][c]=='X')
+				tmp[r][c] = 'N';
+			else
+				tmp[r][c] = 'R';
+		}
+	}
+
+	for(int i=0;i<dim;i++)
+		cout<<tmp[i]<<endl;
+}
+
 int main()
 {
 /*The standard C++ I/O functions (cin/cout) flush the buffer 
@@ -136,7 +215,41 @@ the following lines in main function.*/
 	
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
-		
+	int n;
+
+	while(cin>>n){
+		if(!n)break;
+		FOR(i,0,n)
+			cin>>s[i];
+
+		if(n==1){
+			if(s[0]==".")
+				cout<<1<<endl;
+			else
+				cout<<0<<endl;
+		}
+
+		//cout<<"NEW CASE"<<endl;
+		int lim = (1<<(n*n));
+		int mx = 0;
+		for(int i=0;i<lim;i++){
+			if(safe(i,n*n)){
+				//cout<<i<<endl;
+				mx = max(mx,numOnes(i));
+			}
+			//cout<<i<<endl;
+			//print(i,lim,n);
+			//cout<<endl;
+		}	
+
+		// print(5161,n);
+
+		// cout<<safe(5161,n*n)<<endl;
+
+		cout<<mx<<endl;
+
+
+	}
 
     return 0;
 }
