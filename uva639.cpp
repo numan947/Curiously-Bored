@@ -227,6 +227,8 @@ the following lines in main function.*/
 				cout<<1<<endl;
 			else
 				cout<<0<<endl;
+
+			continue;
 		}
 
 		//cout<<"NEW CASE"<<endl;
