@@ -122,7 +122,9 @@ inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPo
 int dx[]={1,0,-1,0};
 int dy[]={0,1,0,-1};*/
 
-#define MAX 12
+#define MAX 100001
+
+int stk[MAX];
 
 int main()
 {
@@ -139,54 +141,50 @@ the following lines in main function.*/
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
 
-	int tc,N,asdf,P;
+	int N,H;
+	cin>>N>>H;
 
-	vi actual;
-	set<int>mapper;
+	FOR(i,0,N)
+		cin>>stk[i];
 
-	cin>>tc;
-	while(tc--){
-		cin>>P;
-		cin>>N;
+	int iPos=0,iStat=0,cmd;
+	
 
-		actual.clear();
-		//mapper.clear();
 
-		FOR(i,0,N){
-			int tmp = 0;
-			FOR(j,0,P){
-				cin>>asdf;
-				if(asdf)
-					setBit(tmp, P-j-1);
-			}
-			actual.pb(tmp);
-		}
+	while(cin>>cmd){
+		if(!cmd)break;
 
-		// for(int i=0;i < actual.size(); i++)
-		// 	cout << actual[i] << endl;
-
-		int lim = (1<<P);
-		int mn = INF;
-		for(int i=0;i<lim;i++){
-			//cout<<i<<endl;
-			mapper.clear();
-			int currentMask = i;
-			bool ok = true;
-			for(int j = 0;j<actual.size();j++){
-				if(!mapper.insert(actual[j]&currentMask).se){
-					ok = false;
-					break;
+		switch(cmd){
+			case 1:
+				if(iPos>0)
+					iPos--;
+				break;
+			case 2:
+				if(iPos<N-1)
+					iPos++;
+				break;
+			case 3:
+				if(!iStat && stk[iPos]){
+					iStat = 1;
+					stk[iPos]--;
 				}
-			}
-			if(ok){
-				mn = min(mn, numOnes(currentMask));
-				//cout<<currentMask<<endl;
-			}
+				break;
+			case 4:
+				if(iStat&&stk[iPos]<H){
+					iStat = 0;
+					stk[iPos]++;
+				}
+				break;
 		}
-
-		cout<<mn<<endl;
-
 	}
+
+	cout<<stk[0];
+	FOR(i,1,N)
+		cout<<" "<<stk[i];
+	cout<<endl;
+
+
+
 	
 
     return 0;

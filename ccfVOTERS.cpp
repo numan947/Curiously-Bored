@@ -124,6 +124,9 @@ int dy[]={0,1,0,-1};*/
 
 #define MAX 12
 
+
+map<int,int>mpp;
+
 int main()
 {
 /*The standard C++ I/O functions (cin/cout) flush the buffer 
@@ -139,54 +142,25 @@ the following lines in main function.*/
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
 
-	int tc,N,asdf,P;
+	mpp.clear();
 
-	vi actual;
-	set<int>mapper;
+	int n1,n2,n3,tmp,ans=0;
+	cin>>n1>>n2>>n3;
 
-	cin>>tc;
-	while(tc--){
-		cin>>P;
-		cin>>N;
 
-		actual.clear();
-		//mapper.clear();
+	FOR(i,0,n1+n2+n3){
+		cin>>tmp;
+		mpp[tmp]++;
 
-		FOR(i,0,N){
-			int tmp = 0;
-			FOR(j,0,P){
-				cin>>asdf;
-				if(asdf)
-					setBit(tmp, P-j-1);
-			}
-			actual.pb(tmp);
-		}
-
-		// for(int i=0;i < actual.size(); i++)
-		// 	cout << actual[i] << endl;
-
-		int lim = (1<<P);
-		int mn = INF;
-		for(int i=0;i<lim;i++){
-			//cout<<i<<endl;
-			mapper.clear();
-			int currentMask = i;
-			bool ok = true;
-			for(int j = 0;j<actual.size();j++){
-				if(!mapper.insert(actual[j]&currentMask).se){
-					ok = false;
-					break;
-				}
-			}
-			if(ok){
-				mn = min(mn, numOnes(currentMask));
-				//cout<<currentMask<<endl;
-			}
-		}
-
-		cout<<mn<<endl;
-
+		if(mpp[tmp]==2)
+			ans++;
 	}
+	cout<<ans<<endl;
+	FORall(it, mpp){
+		if(it->se >=2)
+			cout<<it->fi<<endl;
+	}
+
 	
 
     return 0;

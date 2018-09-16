@@ -138,55 +138,33 @@ the following lines in main function.*/
 	
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
+	int N;
 
-	int tc,N,asdf,P;
+	int c1,c2,maxAns,leader;
 
-	vi actual;
-	set<int>mapper;
+	int t1,t2;
+	cin>>N;
 
-	cin>>tc;
-	while(tc--){
-		cin>>P;
-		cin>>N;
+	c1=c2=maxAns=leader=0;
 
-		actual.clear();
-		//mapper.clear();
-
-		FOR(i,0,N){
-			int tmp = 0;
-			FOR(j,0,P){
-				cin>>asdf;
-				if(asdf)
-					setBit(tmp, P-j-1);
-			}
-			actual.pb(tmp);
-		}
-
-		// for(int i=0;i < actual.size(); i++)
-		// 	cout << actual[i] << endl;
-
-		int lim = (1<<P);
-		int mn = INF;
-		for(int i=0;i<lim;i++){
-			//cout<<i<<endl;
-			mapper.clear();
-			int currentMask = i;
-			bool ok = true;
-			for(int j = 0;j<actual.size();j++){
-				if(!mapper.insert(actual[j]&currentMask).se){
-					ok = false;
-					break;
-				}
-			}
-			if(ok){
-				mn = min(mn, numOnes(currentMask));
-				//cout<<currentMask<<endl;
+	while(N--){
+		cin>>t1>>t2;
+		c1+=t1;
+		c2+=t2;
+		if(c1>c2){
+			if((c1-c2)>maxAns){
+				maxAns = c1-c2;
+				leader=0;
 			}
 		}
-
-		cout<<mn<<endl;
-
+		else
+			if((c2-c1)>maxAns){
+				maxAns = c2 - c1;
+				leader=1;
+			}
 	}
+
+	cout<<leader+1<<" "<<maxAns<<endl;
 	
 
     return 0;

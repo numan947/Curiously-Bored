@@ -122,7 +122,66 @@ inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPo
 int dx[]={1,0,-1,0};
 int dy[]={0,1,0,-1};*/
 
-#define MAX 12
+#define MAX 100001
+
+
+int brkt[MAX];
+
+vector<int>stk;
+
+
+pair<pii,pii> findMaxNestingDepth(int N)
+{
+	stk.clear();
+	int nst = 0;
+
+	pii nstDpth;
+
+	nstDpth.fi = 0;
+	nstDpth.se = 0;
+
+	pii mxmtch;
+	mxmtch.fi = 0;
+	mxmtch.se = 0;
+
+	int mxP = 0;
+	int mxC = 0;
+
+
+	for(int i=0;i<N;i++){
+		if(brkt[i]==1){
+			//stk.pb(1);
+			if(nst==0){
+				mxC = 0;
+				mxP = i;
+			}
+			else
+				mxC++;
+			nst++;
+		}
+		else{
+			//stk.pop_back();
+			nst--;
+			if(nst==0){
+				mxC+=2;
+				if(mxmtch.fi<mxC){
+					mxmtch.fi = mxC;
+					mxmtch.se = mxP;
+				}
+			}
+			else
+				mxC++;
+		}
+
+		if(nst>nstDpth.fi){
+			nstDpth.fi = nst;
+			nstDpth.se = i;
+		}
+	}
+
+	return mp(nstDpth,mxmtch);
+
+}
 
 int main()
 {
@@ -139,54 +198,14 @@ the following lines in main function.*/
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
 
-	int tc,N,asdf,P;
+	int N;
+	cin>>N;
+	FOR(i,0,N)
+		cin >> brkt[i];
 
-	vi actual;
-	set<int>mapper;
+	pair<pii,pii>  ans = findMaxNestingDepth(N);
 
-	cin>>tc;
-	while(tc--){
-		cin>>P;
-		cin>>N;
-
-		actual.clear();
-		//mapper.clear();
-
-		FOR(i,0,N){
-			int tmp = 0;
-			FOR(j,0,P){
-				cin>>asdf;
-				if(asdf)
-					setBit(tmp, P-j-1);
-			}
-			actual.pb(tmp);
-		}
-
-		// for(int i=0;i < actual.size(); i++)
-		// 	cout << actual[i] << endl;
-
-		int lim = (1<<P);
-		int mn = INF;
-		for(int i=0;i<lim;i++){
-			//cout<<i<<endl;
-			mapper.clear();
-			int currentMask = i;
-			bool ok = true;
-			for(int j = 0;j<actual.size();j++){
-				if(!mapper.insert(actual[j]&currentMask).se){
-					ok = false;
-					break;
-				}
-			}
-			if(ok){
-				mn = min(mn, numOnes(currentMask));
-				//cout<<currentMask<<endl;
-			}
-		}
-
-		cout<<mn<<endl;
-
-	}
+	cout<<ans.fi.fi<<" "<<ans.fi.se+1<<" "<<ans.se.fi<<" "<<ans.se.se+1<<endl;
 	
 
     return 0;
