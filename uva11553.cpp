@@ -122,7 +122,9 @@ inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPo
 int dx[]={1,0,-1,0};
 int dy[]={0,1,0,-1};*/
 
-#define MAX 12
+#define MAX 10
+
+int grid[MAX][MAX];
 
 int main()
 {
@@ -138,6 +140,41 @@ the following lines in main function.*/
 	
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
+
+	int t,n;
+	vector<int>cols;
+	cin>>t;
+
+	while(t--){
+		cols.clear();
+		cin>>n;
+
+		FOR(i,0,n)
+			FOR(j,0,n)
+				cin>>grid[i][j];
+
+
+		FOR(i,0,n)
+			cols.pb(i);
+
+
+		int mx = INF;
+
+
+		do{
+			int tmp = 0;
+			for(int i=0;i<n;i++){
+				tmp+=grid[i][cols[i]];
+			}
+
+			mx = min(mx,tmp);
+
+		}while(next_permutation(cols.begin(),cols.end()));
+
+
+		cout<<mx<<endl;
+
+	}
 	
 
     return 0;
