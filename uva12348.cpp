@@ -90,7 +90,7 @@ const ld EPS = 1e-6;
 
 //some helper functions for input processing
 
-// inline void tokenize(string str,vector<string> &tokens, string delim){ tokens.clear();size_t s = str.find_first_not_of(delim), e=s; while(s!=std::string::npos){e=str.find(delim,s);tokens.push_back(str.substr(s,e-s));s=str.find_first_not_of(delim,e);}}
+inline void tokenize(string str,vector<string> &tokens, string delim){ tokens.clear();size_t s = str.find_first_not_of(delim), e=s; while(s!=std::string::npos){e=str.find(delim,s);tokens.push_back(str.substr(s,e-s));s=str.find_first_not_of(delim,e);}}
 // inline bool isPalindrome(string str){for(int i=0;i<(str.size())/2;i++)if(str[i]!=str[str.size()-1-i])return false;return true;}
 // inline string customStrip(string in,string delim){string ret = "";for(int i=0;i<in.size();i++){if(delim.find(in[i],0)==std::string::npos)ret+=in[i];}return ret;}
 // inline string commaSeparate(long long value){string numWithCommas = to_string(value);int insertPosition = numWithCommas.length() - 3;while (insertPosition > 0) {numWithCommas.insert(insertPosition, ",");insertPosition-=3;}return numWithCommas;}
@@ -122,7 +122,31 @@ inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPo
 int dx[]={1,0,-1,0};
 int dy[]={0,1,0,-1};*/
 
-#define MAX 12
+#define MAX 112
+
+
+typedef struct tt{
+	vector<int>st;
+}SubSet;
+
+SubSet sst[MAX];
+
+
+bool check(int mask, vector<int>st)
+{
+	int r = 0, b = 0;
+
+	for(int i=0; i< st.size(); i++){
+		if(bit(mask,st[i]-1))
+			r++;
+		else
+			b++;
+	}
+
+	if(r==0||b==0)
+		return false;
+	return true;
+}
 
 int main()
 {
@@ -132,12 +156,55 @@ For enhancing C++ I/O speed,you can either use C’s standard I/O
 function (scanf/printf) instead of (cin/cout) or you can write
 the following lines in main function.*/
 	
-	ios_base::sync_with_stdio(0);
-	cin.tie(0);
-	cout.tie(0);
+	// ios_base::sync_with_stdio(0);
+	// cin.tie(0);
+	// cout.tie(0);
 	
 	freopen("input.txt", "r", stdin);
-	// freopen("output.txt", "w", stdout);
+	//freopen("output.txt", "w", stdout);
+
+	int k,n,m;
+
+	string s;
+	vector<string> tokens;
+
+	while(cin>>k){
+
+		while(k--){
+			cin>>n>>m;
+
+			getchar();
+			//getline(cin,s);
+
+			FOR(i,0,m){
+				getline(cin,s);
+				tokenize(s,tokens," ");
+				sst[i].st.clear();
+				FOR(j,0,tokens.size())
+					sst[i].st.pb(stoi(tokens[j]));
+			}
+
+
+			bool ok = false;
+			for(int i = 1; i < (1<<n) && !ok; i++){
+				bool t = true;
+				for(int j = 0; j<m && t; j++){
+					t = check(i,sst[j].st);
+				}
+
+				ok = t;
+			}
+
+			if(ok)
+				cout<<"Y";
+			else 
+				cout<<"N";
+
+		}
+		cout<<endl;
+	}
+
+
 	
 
     return 0;

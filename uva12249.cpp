@@ -70,7 +70,9 @@ typedef pair<int, char> pic;
 typedef pair<int, string> pis;
 typedef pair<string, int> psi;
 typedef pair<string, string> pss;
-
+typedef vector<int> vi;
+typedef vector<pii> vii;
+typedef vector<string> vs;
 const int MOD = (int) 1e9 + 7;
 const int FFTMOD = 1007681537;
 const int INF = (int) 1e9;
@@ -79,22 +81,20 @@ const ld PI = acos((ld) -1);
 const ld EPS = 1e-6;
 
 //some common functions
-
-// inline ll gcd(ll a, ll b) {ll r; while (b) {r = a % b; a = b; b = r;} return a;} //gcd
-// inline ll lcm(ll a, ll b) {return a / gcd(a, b) * b;} //lcm
-// inline ll fpow(ll n, ll k, int p = MOD) {ll r = 1; for (; k; k >>= 1) {if (k & 1) r = r * n % p; n = n * n % p;} return r;} //nth power
-// inline void addmod(int& a, int val, int p = MOD) {if ((a = (a + val)) >= p) a -= p;}  //add mod
-// inline void submod(int& a, int val, int p = MOD) {if ((a = (a - val)) < 0) a += p;}  //sub mod
-// inline ll isqrt(ll k) {ll r = sqrt(k) + 1; while (r * r > k) r--; return r;}  //check sqrt
-// inline ll icbrt(ll k) {ll r = cbrt(k) + 1; while (r * r * r > k) r--; return r;}  //check cbrt
+inline ll gcd(ll a, ll b) {ll r; while (b) {r = a % b; a = b; b = r;} return a;} //gcd
+inline ll lcm(ll a, ll b) {return a / gcd(a, b) * b;} //lcm
+inline ll fpow(ll n, ll k, int p = MOD) {ll r = 1; for (; k; k >>= 1) {if (k & 1) r = r * n % p; n = n * n % p;} return r;} //nth power
+inline void addmod(int& a, int val, int p = MOD) {if ((a = (a + val)) >= p) a -= p;}  //add mod
+inline void submod(int& a, int val, int p = MOD) {if ((a = (a - val)) < 0) a += p;}  //sub mod
+inline ll isqrt(ll k) {ll r = sqrt(k) + 1; while (r * r > k) r--; return r;}  //check sqrt
+inline ll icbrt(ll k) {ll r = cbrt(k) + 1; while (r * r * r > k) r--; return r;}  //check cbrt
 
 //some helper functions for input processing
-
-// inline void tokenize(string str,vector<string> &tokens, string delim){ tokens.clear();size_t s = str.find_first_not_of(delim), e=s; while(s!=std::string::npos){e=str.find(delim,s);tokens.push_back(str.substr(s,e-s));s=str.find_first_not_of(delim,e);}}
-// inline bool isPalindrome(string str){for(int i=0;i<(str.size())/2;i++)if(str[i]!=str[str.size()-1-i])return false;return true;}
-// inline string customStrip(string in,string delim){string ret = "";for(int i=0;i<in.size();i++){if(delim.find(in[i],0)==std::string::npos)ret+=in[i];}return ret;}
-// inline string commaSeparate(long long value){string numWithCommas = to_string(value);int insertPosition = numWithCommas.length() - 3;while (insertPosition > 0) {numWithCommas.insert(insertPosition, ",");insertPosition-=3;}return numWithCommas;}
-// inline string strip(string s){int i=0;while(i<s.size()){if(isspace(s[i]))i++;else break;}s.erase(0,i);i = s.size()-1;while(i>=0){if(isspace(s[i]))i--;else break;}s.erase(i+1,s.size()-i-1);return s;}
+inline void tokenize(string str,vector<string> &tokens, string delim){ tokens.clear();size_t s = str.find_first_not_of(delim), e=s; while(s!=std::string::npos){e=str.find(delim,s);tokens.push_back(str.substr(s,e-s));s=str.find_first_not_of(delim,e);}}
+inline bool isPalindrome(string str){for(int i=0;i<(str.size())/2;i++)if(str[i]!=str[str.size()-1-i])return false;return true;}
+inline string customStrip(string in,string delim){string ret = "";for(int i=0;i<in.size();i++){if(delim.find(in[i],0)==std::string::npos)ret+=in[i];}return ret;}
+inline string commaSeparate(long long value){string numWithCommas = to_string(value);int insertPosition = numWithCommas.length() - 3;while (insertPosition > 0) {numWithCommas.insert(insertPosition, ",");insertPosition-=3;}return numWithCommas;}
+inline string strip(string s){int i=0;while(i<s.size()){if(isspace(s[i]))i++;else break;}s.erase(0,i);i = s.size()-1;while(i>=0){if(isspace(s[i]))i--;else break;}s.erase(i+1,s.size()-i-1);return s;}
 
 //errors
 #define db(x) cerr << #x << " = " << (x) << "\n";
@@ -124,6 +124,35 @@ int dy[]={0,1,0,-1};*/
 
 #define MAX 12
 
+
+string scenes[MAX];
+
+
+int match(string s1, string s2)
+{	
+	int mxMtch = 0;
+	for(int st = s1.size()-1;st>=0;st--){
+		int cnt = 0;
+		int i = 0,j = st;
+
+		while(i<s2.size() && j<s1.size()){
+			if(s1[j] == s2[i])cnt++;
+			else{
+				cnt = 0;
+				break;
+			}
+			i++;j++;
+		}
+		if(j==s1.size())
+			mxMtch = max(cnt, mxMtch);
+	}
+
+	return mxMtch;
+
+}
+
+
+
 int main()
 {
 /*The standard C++ I/O functions (cin/cout) flush the buffer 
@@ -137,7 +166,47 @@ the following lines in main function.*/
 	cout.tie(0);
 	
 	freopen("input.txt", "r", stdin);
-	// freopen("output.txt", "w", stdout);
+	freopen("output.txt", "w", stdout);
+
+	int T,n,KS=0;
+
+	cin>>T;
+	vector<int>vv;
+
+	while(T--){
+		cin>>n;
+		vv.clear();
+
+		int totalLength = 0;
+
+		FOR(i,0,n){
+			cin>>scenes[i];
+			totalLength+=scenes[i].size();
+			vv.pb(i);
+		}
+
+		int mini = INF;
+
+		do{
+			int mxMtch = 0;
+			string tmp = scenes[vv[0]];
+			for(int i = 1; i < n; i++){
+				string s2 = scenes[vv[i]];
+				int t = match(tmp,s2);
+				mxMtch+=t;
+				for(int k=t;k<s2.size();k++)
+					tmp+=s2[k];
+			}
+
+			mini = min(mini, totalLength - mxMtch);
+
+		}while(next_permutation(vv.begin(),vv.end()));
+
+		cout<<"Case "<<++KS<<": ";
+		cout<<mini<<endl;
+
+
+	}
 	
 
     return 0;
