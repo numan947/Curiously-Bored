@@ -1,50 +1,40 @@
-
-#include <stdio.h>
-#include <string.h>
-#include <algorithm>
-#include <ctype.h>
+#include<cmath>
+#include<cstdio>
+#include<cstring>
+ 
 using namespace std;
-int w[30], n, C;
-int test() {
-    int i, j;
-    for(i = 0; i < n; i++) {
-        for(j = i+1; j < n; j++) {
-            if((C/w[i])%n == (C/w[j])%n) {
-                C = min((C/w[i]+1)*w[i], (C/w[j]+1)*w[j]);
-                printf("New C: %d\n",C);
-                return 0;
-            }
+ 
+int T, N, tot;
+int peg[100];
+ 
+void simul(int v, int p) {
+    if(p == N) return;
+    if(peg[p] == 0) {
+        peg[p] = v;
+        tot++;
+        return simul(v + 1, p);
+    }
+     
+    for(int i = 0; i <= p; i++) {
+        int root = (int) sqrt(peg[i] + v);
+        if(root * root == peg[i] + v) {
+            peg[i] = v;
+            tot++;
+            return simul(v + 1, p);
         }
     }
-    return 1;
+ 
+    simul(v, p + 1);
 }
+ 
 int main() {
     freopen("input.txt", "r", stdin);
-    char s[100];
-    while(gets(s)) {
-        int len = strlen(s);
-        int i, j;
-        n = 0;
-        for(i = 0; i < len; i++) {
-            if(isalpha(s[i])) {
-                char tmp[100];
-                sscanf(s+i, "%s", tmp);
-                int sublen = strlen(tmp);
-                w[n] = 0;
-                for(j = 0; j < sublen; j++)
-                    w[n] = (w[n]<<5) + (tmp[j]-'a'+1);
-                i += sublen;
-                n++;
-            }
-        }
-        C = 2147483647;
-        for(i = 0; i < n; i++) {
-            C = min(C, w[i]);
-            printf("%d\n",w[i] );
-        }
-
-        while(!test());
-        printf("%s\n%d\n\n", s, C);
+    scanf("%d", &T);
+    while(T--) {
+        scanf("%d", &N);
+        memset(peg, 0, sizeof peg);
+        tot = 0;
+        simul(1, 0);
+        printf("%d\n", tot);
     }
-    return 0;
 }
