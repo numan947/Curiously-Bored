@@ -112,8 +112,10 @@ inline bool LT(double d1,double d2){return GT(d2,d1);}
 inline bool GTE(double d1, double d2){return GT(d1,d2)||EQ(d1,d2);}
 //d1<=d2
 inline bool LTE(double d1,double d2){return LT(d1,d2)||EQ(d1,d2);}
+
 //numPosAfterDecimal={10,100,1000,10000,....}
 //Roundoff(3.56985,10000) = 3.5699
+
 inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPosAfterDecimal)/numPosAfterDecimal;}
 */
 
@@ -122,46 +124,55 @@ inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPo
 int dx[]={1,0,-1,0};
 int dy[]={0,1,0,-1};*/
 
-#define MAX 12
-pii gvp;
+#define MAX 13
 
-int sol;
+ll ara[MAX];
+ll s,d;
+ll mx;
 
-int row[8];
-
-
-
-bool placeable(int r, int c)
+bool conditionCheck()
 {
-	for(int i=0;i<c;i++){
-		if(row[i]==r||abs(row[i]-r) == abs(i-c))
+	int total = 0;
+	for(int i=0;i<5;i++)
+		total+=ara[i];
+	if(total>0)
+		return false;
+	for(int i=5;i<12;i++){
+		total+=ara[i];
+		total-=ara[i-5];
+		if(total>0)
 			return false;
 	}
+
 	return true;
 }
 
 
-
-
-void solve(int c)
+void computeBest(int curMonth)
 {
-	//db(c);
-	if(row[gvp.se] == gvp.fi && c==8){
-		++sol;
-		cout<<setw(2)<<setfill(' ')<<sol<<"      ";
-		cout<<1+row[0];
-		for(int i=1;i<8;i++)
-			cout<<" "<<1+row[i];
-		cout<<endl;
+	if(curMonth==12){
+		if(conditionCheck()){
+			ll tmp = 0;
+			FOR(i,0,12)
+				tmp+=ara[i];
+			// if(tmp>mx){
+			// 	for(int i=0;i<12;i++)
+			// 		cout<<ara[i]<<" ";
+			// 	cout<<endl;
+			// }
+			mx = max(mx,tmp);
+		}
+		return;
 	}
 
-	for(int i=0;i<8;i++){
-		if(placeable(i,c)){
-			row[c]=i;
-			solve(c+1);
-		}
-	}
+	ara[curMonth] = s;
+	computeBest(curMonth+1);
+	ara[curMonth] = -d;
+	computeBest(curMonth+1);
+
 }
+
+
 
 int main()
 {
@@ -176,22 +187,17 @@ the following lines in main function.*/
 	cout.tie(0);
 	
 	freopen("input.txt", "r", stdin);
-	freopen("output.txt", "w", stdout);
+	// freopen("output.txt", "w", stdout);
 
-	int tc;
-	cin>>tc;
+	while(cin>>s>>d){
+		mx = -1;
 
-	while(tc--){
-		ms(row,-1);
-		cin>>gvp.fi>>gvp.se;
-		gvp.fi--;gvp.se--;
+		computeBest(0);
 
-		cout<<"SOLN       COLUMN"<<endl;
-		cout<<" #      1 2 3 4 5 6 7 8"<<endl<<endl;
-		sol = 0;
-		solve(0);
-		if(tc)
-			cout<<endl;
+		if(mx<0)
+			cout<<"Deficit"<<endl;
+		else
+			cout<<mx<<endl;
 	}
 	
 

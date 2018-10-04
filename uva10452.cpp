@@ -118,49 +118,59 @@ inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPo
 */
 
 
-/*//4 directional movement
-int dx[]={1,0,-1,0};
-int dy[]={0,1,0,-1};*/
+//4 directional movement
+int dr[]={1,-1,0,0};
+int dc[]={0,0,-1,1};
+
+pii st,ed;
+
+vector<pii>pathVector;
+
 
 #define MAX 12
-pii gvp;
 
-int sol;
-
-int row[8];
+char path[MAX][MAX];
 
 
-
-bool placeable(int r, int c)
+void findPath(int r, int c)
 {
-	for(int i=0;i<c;i++){
-		if(row[i]==r||abs(row[i]-r) == abs(i-c))
-			return false;
+	
+	if(r==ed.fi && c==ed.se)
+		return;
+
+	for(int it = 1; it<4; it++){
+		int rr = r + dr[it];
+		int cc = c + dc[it];
+
+
+		if(
+			path[rr][cc]=='#'||
+			path[rr][cc]=='I'||
+			path[rr][cc]=='E'||
+			path[rr][cc]=='H'||
+			path[rr][cc]=='O'||
+			path[rr][cc]=='V'||
+			path[rr][cc]=='A'
+			)
+		{
+			
+			path[r][c] = 'Q';
+			pathVector.pb(mp(dr[it],dc[it]));
+			return findPath(rr,cc);
+		}
+
 	}
-	return true;
+
 }
 
-
-
-
-void solve(int c)
+void printPathVectorEntry(pii t)
 {
-	//db(c);
-	if(row[gvp.se] == gvp.fi && c==8){
-		++sol;
-		cout<<setw(2)<<setfill(' ')<<sol<<"      ";
-		cout<<1+row[0];
-		for(int i=1;i<8;i++)
-			cout<<" "<<1+row[i];
-		cout<<endl;
-	}
-
-	for(int i=0;i<8;i++){
-		if(placeable(i,c)){
-			row[c]=i;
-			solve(c+1);
-		}
-	}
+	if(t.fi == 0 && t.se == 1)
+		cout<<"right";
+	else if(t.fi == -1 && t.se == 0)
+		cout<<"forth";
+	else if(t.fi == 0 && t.se == -1)
+		cout<<"left";
 }
 
 int main()
@@ -176,22 +186,38 @@ the following lines in main function.*/
 	cout.tie(0);
 	
 	freopen("input.txt", "r", stdin);
-	freopen("output.txt", "w", stdout);
+	// freopen("output.txt", "w", stdout);
 
-	int tc;
-	cin>>tc;
+	int tc;cin>>tc;
+
+	int len,wid;
 
 	while(tc--){
-		ms(row,-1);
-		cin>>gvp.fi>>gvp.se;
-		gvp.fi--;gvp.se--;
+		cin>>len>>wid;
 
-		cout<<"SOLN       COLUMN"<<endl;
-		cout<<" #      1 2 3 4 5 6 7 8"<<endl<<endl;
-		sol = 0;
-		solve(0);
-		if(tc)
-			cout<<endl;
+		FOR(i,0,len)
+			FOR(j,0,wid){
+				cin>>path[i][j];
+				if(path[i][j]=='@'){
+					st.fi = i;
+					st.se = j;
+				}
+				if(path[i][j]=='#'){
+					ed.fi = i;
+					ed.se = j;
+				}
+			}
+
+		pathVector.clear();
+
+		findPath(st.fi, st.se);
+
+		printPathVectorEntry(pathVector[0]);
+		for(int i=1 ; i<pathVector.size(); i++){
+			cout<<" ";printPathVectorEntry(pathVector[i]);
+		}
+		cout<<endl;
+
 	}
 	
 
