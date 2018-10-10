@@ -201,3 +201,6 @@ GitHub.sublime-settings
 
 
 # End of https://www.gitignore.io/api/c,cvs,c++,text,intellij,sublimetext
+
+test.cpp
+template.cpp
