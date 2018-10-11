@@ -90,7 +90,7 @@ const ld EPS = 1e-6;
 
 //some helper functions for input processing
 
-// inline void tokenize(string str,vector<string> &tokens, string delim){ tokens.clear();size_t s = str.find_first_not_of(delim), e=s; while(s!=std::string::npos){e=str.find(delim,s);tokens.push_back(str.substr(s,e-s));s=str.find_first_not_of(delim,e);}}
+inline void tokenize(string str,vector<string> &tokens, string delim){ tokens.clear();size_t s = str.find_first_not_of(delim), e=s; while(s!=std::string::npos){e=str.find(delim,s);tokens.push_back(str.substr(s,e-s));s=str.find_first_not_of(delim,e);}}
 // inline bool isPalindrome(string str){for(int i=0;i<(str.size())/2;i++)if(str[i]!=str[str.size()-1-i])return false;return true;}
 // inline string customStrip(string in,string delim){string ret = "";for(int i=0;i<in.size();i++){if(delim.find(in[i],0)==std::string::npos)ret+=in[i];}return ret;}
 // inline string commaSeparate(long long value){string numWithCommas = to_string(value);int insertPosition = numWithCommas.length() - 3;while (insertPosition > 0) {numWithCommas.insert(insertPosition, ",");insertPosition-=3;}return numWithCommas;}
@@ -122,7 +122,53 @@ inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPo
 int dx[]={1,0,-1,0};
 int dy[]={0,1,0,-1};*/
 
-#define MAX 12
+#define MAX 260
+
+vector<int>edges[MAX];
+int N;
+int visited[MAX];
+vector<int>path;
+
+
+bool findPath(int curNode)
+{
+
+	if(curNode==0 && visited[curNode]){
+		for(int i=1;i<N;i++)
+			if(!visited[i])
+				return false;
+		return true;
+	}
+
+	visited[curNode] = 1;
+
+	for(int i=0;i<edges[curNode].size();i++){
+		int nd = edges[curNode][i];
+		
+		if(nd!=0){
+			if(visited[nd])
+				continue;
+			if(findPath(nd)){
+				path.pb(nd);
+				return true;
+			}
+		}
+		else{
+			if(findPath(nd)){
+				path.pb(nd);
+				return true;
+			}
+		}
+
+	}
+
+	visited[curNode] = 0;
+	return false;
+}
+
+
+
+
 
 int main()
 {
@@ -137,7 +183,46 @@ the following lines in main function.*/
 	cout.tie(0);
 	
 	freopen("input.txt", "r", stdin);
-	// freopen("output.txt", "w", stdout);
+	freopen("output.txt", "w", stdout);
+	string inp;
+	vector<string>toks;
+
+	while(getline(cin,inp)){
+		N = stoi(inp);
+		
+		path.clear();
+		FOR(i,0,N){
+			edges[i].clear();
+			visited[i] = 0;
+		}
+
+
+		while(getline(cin,inp)){
+			if(inp[0]=='%')
+				break;
+			tokenize(inp,toks," ");
+			int u1 = stoi(toks[0]);
+			int u2 = stoi(toks[1]);
+			u1--;u2--;
+
+			edges[u1].pb(u2);
+			edges[u2].pb(u1);
+		}
+
+
+		if(findPath(0)){
+			reverse(path.begin(), path.end());
+			cout<<1<<" "<<path[0]+1;
+			FOR(i,1,path.size())
+				cout<<" "<<path[i]+1;
+			cout<<endl;
+		}
+		else
+			cout<<"N"<<endl;
+
+
+
+	}
 	
 
     return 0;
