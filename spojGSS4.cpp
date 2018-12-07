@@ -223,6 +223,7 @@ the following lines in main function.*/
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
 	ll N,M,x,y,op,KASE=0;
+	
 
 	while(scanf("%lld",&N)==1){
 		FOR(i,0,N)
