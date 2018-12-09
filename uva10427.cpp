@@ -124,8 +124,20 @@ int dy[]={0,1,0,-1};*/
 
 #define MAX 100000000
 
+
 ll lengthArray[MAX];
 ll actualArray[MAX];
+
+
+// int lenNum(int num){
+// 	int cnt = 0;
+// 	while(num>0){
+// 		cnt+=1;
+// 		num/=10;
+// 	}
+// 	return cnt;
+// }
+
 int getDigit(ll mainNumber,int ext){
 	//int ext = lenNum(mainNumber)-d0;
 	int dig=mainNumber%10;
@@ -150,8 +162,9 @@ the following lines in main function.*/
 	cout.tie(0);
 	
 	freopen("input.txt", "r", stdin);
-	// freopen("output.txt", "w", stdout);
+	freopen("output.txt", "w", stdout);
 
+	vector<int>vv;
 	ll currentSize = 1;
 	for(ll i=1;i<MAX;i++){
 		if(
@@ -169,48 +182,26 @@ the following lines in main function.*/
 		//cout<<currentSize<<endl;
 	}
 
+	// for(int i=0;i<=100;i++)
+	// 	cout<<lengthArray[i]<<endl;
 
-	vector<ll>vv;
-	vv.pb(1);
-	ll last = 1;
-	int add = 1;
-	while(last<=1000000){
-			if(
-			vv.size()==9||
-			vv.size()==99||
-			vv.size()==999||
-			vv.size()==9999||
-			vv.size()==99999||
-			vv.size()==999999||
-			vv.size()==9999999||
-			vv.size()==99999999)
-			add++;
-		last+=add;
-		vv.pb(vv[vv.size()-1]+last);
-	}
+	// for(int i=MAX-1;i>=MAX-100;i--)
+	// 	cout<<lengthArray[i]<<endl;
 
+	int N;
 
-	int N,TC;
-	cin>>TC;
-	while(TC--){
+	while(cin>>N){
+		
+		int tmp = N;
+		int idx =lower_bound(lengthArray,lengthArray+MAX,N)-lengthArray;
 		//cout<<N<<endl;
-		cin>>N;
-		int pos = lower_bound(vv.begin(),vv.end(),N)-vv.begin();
+		//cout<<lengthArray[idx-1]<<" "<<lengthArray[idx]<<endl;
 
-		if(pos==0){ //special case
-			cout<<vv[0]<<endl;
-		}else{ //probably general case
-
-			int posInActualString = N-vv[pos-1];
-
-			int idx = lower_bound(lengthArray,lengthArray+MAX,posInActualString)-lengthArray;
-
-
-			int digitPos = posInActualString-lengthArray[idx-1];
-			int d = getDigit(actualArray[idx],lengthArray[idx]-lengthArray[idx-1]-digitPos);
-			cout<<d<<endl;
-		}
+		int digitPos = N-lengthArray[idx-1];
+		int d = getDigit(actualArray[idx],lengthArray[idx]-lengthArray[idx-1]-digitPos);
+		cout<<d<<endl;
 	}
+
 
 	
 

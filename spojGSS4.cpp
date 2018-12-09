@@ -220,9 +220,10 @@ the following lines in main function.*/
 	// cin.tie(0);
 	// cout.tie(0);
 	
-	freopen("input.txt", "r", stdin);
+	// freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
 	ll N,M,x,y,op,KASE=0;
+	
 	
 
 	while(scanf("%lld",&N)==1){
