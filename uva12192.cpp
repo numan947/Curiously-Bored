@@ -125,7 +125,7 @@ int dy[]={0,1,0,-1};*/
 #define MAX 505
 
 int regionRow[MAX][MAX];
-int regionCol[MAX][MAX];
+
 
 // int testArray[5] = {1,2,3,4,5};
 
@@ -154,7 +154,6 @@ the following lines in main function.*/
 		for(int i=0;i<N;i++)
 			for(int j=0;j<M;j++){
 				cin>>regionRow[i][j];
-				regionCol[j][i]=regionRow[i][j];
 			}
 
 		
@@ -170,36 +169,30 @@ the following lines in main function.*/
 
 			// cout<<L<<" "<<U<<endl;
 
-			int maxSide=-INF;
+			int currentBest = 0;
 			for(int i=0;i<N;i++){
 				int minSide = INF;
-				if((lower_bound(regionRow[i],regionRow[i]+M,L)-regionRow[i])!=N){
+				int leftIdx = (lower_bound(regionRow[i],regionRow[i]+M,L)-regionRow[i]);
+				// int rightIdx = (upper_bound(regionRow[i],regionRow[i]+M,U)-regionRow[i]);
+				// rightIdx--;
+				// if(rightIdx<leftIdx||abs(leftIdx-rightIdx)<currentBest)
+				// 	continue;
+				if(leftIdx!=M){
 					//we found a lower bound in the row, now look for upper_bound
-					int leftIdx = (lower_bound(regionRow[i],regionRow[i]+M,L)-regionRow[i]);
-					int rightIdx = (upper_bound(regionRow[i],regionRow[i]+M,U)-regionRow[i]);
-					rightIdx--;
-
-					if(rightIdx<leftIdx)
-						continue;
-					// cout<<"Row: "<<i<<"-->"<<leftIdx<<" "<<rightIdx<<endl;
-					minSide = abs(rightIdx-leftIdx)+1;
-					if(minSide<=maxSide)
-						continue;
-					for(int j=leftIdx;j<=rightIdx;j++){
-						int leftIdx = (lower_bound(regionCol[j],regionCol[j]+N,L)-regionCol[j]);
-						int rightIdx = (upper_bound(regionCol[j],regionCol[j]+N,U)-regionCol[j]);
-						rightIdx--;						
-						minSide = min(abs(leftIdx-rightIdx)+1,minSide);
+					for(int ii=currentBest;ii<N;ii++){
+						int endRow = i+ii;
+						int endCol = leftIdx+ii;
+						if(endRow>=N||endCol>=M)
+							break;
+						if(regionRow[endRow][endCol]>U)
+							break;
+						currentBest = max(currentBest,ii+1);
 					}
-
-					maxSide = max(maxSide,minSide);
 				}
 			}
-
-			if(maxSide==-INF)
-				maxSide = 0;
-			cout<<maxSide<<endl;
+			cout<<currentBest<<endl;
 		}
+
 		cout<<"-"<<endl;
 	}
 	
