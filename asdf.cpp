@@ -1,41 +1,39 @@
-#include <stdio.h>
-#include <math.h>
-#include <vector>
-#include <algorithm>
+#include <iostream>
+#include <fstream>
 using namespace std;
-int cnt = 0, dv[10005], dt = 0;
-vector<int> ans[10000];
-int buf[10000];
-void dfs(int n, int idx, int i) {
-    if(n == 1) {
-        for(i = 0; i < idx; i++)
-            ans[cnt].push_back(buf[i]);
-        cnt++;
-        return ;
-    }
-    for(; i < dt; i++) {
-        if((n/dv[i] >= dv[i] || n == dv[i])&& n%dv[i] == 0) {
-            buf[idx] = dv[i];
-            dfs(n/dv[i], idx+1, i);
-        }
-    }
-}
+
+int ord[21], arr[21], lis[21], n;
+
 int main() {
-    int n;
-    while(scanf("%d", &n) == 1 && n) {
-        int i, sq = (int)sqrt(n);
-        printf("%d\n",sq );
-        dt = 0;
-        for(i = 2; i <= sq; i++) {
-            if(n%i == 0) {
-                dv[dt++] = i;
-                if(i*i != n)
-                    dv[dt++] = n/i;
-            }
-        }
-        sort(dv, dv+dt);
-        for(int i=0;i<dt;i++)
-            printf("%d\n",dv[i] );
+  freopen("input.txt", "r", stdin);
+  int in;
+  cin >> n;
+  for (int i = 0; i < n; i++) {
+    cin >> in;
+    ord[i+1] = in;
+  }
+  for(int i=1;i<=n;i++)
+    cout<<ord[i]<<" ";
+  cout<<endl;
+  while (cin >> in) { 
+    arr[in] = 1;
+    lis[1] = 1;
+    for (int i = 2; i <= n; i++) {
+      cin >> in;
+      arr[in] = i, lis[i] = 1;
     }
-    return 0;
+  for(int i=1;i<=n;i++)
+    cout<<arr[i]<<" ";
+  cout<<endl;
+
+    int m = 1;
+    for (int i = 2; i <= n; i++)
+      for (int j = 1; j < i; j++)
+        if (ord[arr[i]] > ord[arr[j]] and lis[i] < lis[j] + 1) {
+          lis[i] = lis[j] + 1;
+          m = max(m, lis[i]);
+        }
+    cout << m << endl;
+  }
+  return 0;
 }
