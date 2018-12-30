@@ -122,9 +122,9 @@ inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPo
 int dx[]={1,0,-1,0};
 int dy[]={0,1,0,-1};*/
 
-#define MAX 20005
+#define MAX 33
 
-pii doll[MAX];
+int lc[MAX];
 
 int main()
 {
@@ -140,16 +140,23 @@ the following lines in main function.*/
 	
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
-	int T,n;
-	cin>>T;
 
-	while(T--){
-		cin>>n;
-		FOR(i,0,n)
-			cin>>doll[i].fi>>doll[i].se;
-		
-		//todo : didn't understood how the LIS can be applied to this problem
-		
-	}
+	string s;
+	cin>>s;
+	FOR(i,0,s.size())
+		lc[s[i]-'a']++;
+	
+	int oc = 0;
+
+	FOR(i,0,MAX)
+		if(lc[i]%2)
+			oc++;
+	
+	if(oc==0||oc%2)
+		cout<<"First"<<endl;
+	else
+		cout<<"Second"<<endl;
+	
+
 	return 0;
 }

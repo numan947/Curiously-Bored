@@ -122,9 +122,10 @@ inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPo
 int dx[]={1,0,-1,0};
 int dy[]={0,1,0,-1};*/
 
-#define MAX 20005
+#define MAX 30
 
-pii doll[MAX];
+int letterS1[MAX];
+int letterS2[MAX];
 
 int main()
 {
@@ -140,16 +141,39 @@ the following lines in main function.*/
 	
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
-	int T,n;
-	cin>>T;
 
-	while(T--){
-		cin>>n;
-		FOR(i,0,n)
-			cin>>doll[i].fi>>doll[i].se;
-		
-		//todo : didn't understood how the LIS can be applied to this problem
-		
+	string s1,s2;
+	cin>>s1>>s2;
+	if(s1.size()!=s2.size())
+	{
+		cout<<"NO"<<endl;
+		return 0;
 	}
+
+	FOR(i,0,s1.size())
+		letterS1[s1[i]-'a']++;
+	FOR(j,0,s2.size())
+		letterS2[s2[j]-'a']++;
+	
+	FOR(i,0,MAX){
+		if(letterS1[i]!=letterS2[i]){
+			cout<<"NO"<<endl;
+			return 0;
+		}
+	}
+
+	int diffCount = 0;
+	FOR(i,0,s1.size()){
+		if(s1[i]!=s2[i])
+			diffCount++;
+		if(diffCount>2){
+			cout<<"NO"<<endl;
+			return 0;
+		}
+	}
+
+	cout<<"YES"<<endl;
+	
+
 	return 0;
 }

@@ -122,9 +122,26 @@ inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPo
 int dx[]={1,0,-1,0};
 int dy[]={0,1,0,-1};*/
 
-#define MAX 20005
+#define MAX 10000012
 
-pii doll[MAX];
+bool prime[MAX];
+
+void sieve()
+{
+/* 	FOR(i,0,10000005)
+		prime[i] = 1; */
+	ms(prime,1);
+	prime[0]=prime[1] = 0;
+	prime[2] = 1;
+	for(int i=2;i<=sqrt(10000001);i++){
+		if(prime[i]){
+			for(int j=i*i;j<10000001;j+=i){
+				prime[j] = 0;
+			}
+		}
+	}
+
+}
 
 int main()
 {
@@ -140,16 +157,27 @@ the following lines in main function.*/
 	
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
-	int T,n;
-	cin>>T;
+	
+	int n;
+	cin>>n;
+	vector<int>vv;
+	sieve();
 
-	while(T--){
-		cin>>n;
-		FOR(i,0,n)
-			cin>>doll[i].fi>>doll[i].se;
-		
-		//todo : didn't understood how the LIS can be applied to this problem
-		
+	int aj=2, ai=2;
+
+	for(int i=0;i<10000001&&n;i++){
+		if(prime[i]){
+			n--;
+			vv.pb(i);
+		}
 	}
+
+	// cout<<vv.size()<<endl;
+	cout<<vv[0];
+	FOR(i,1,vv.size())
+		cout<<" "<<vv[i];
+	cout<<endl;
+	
+
 	return 0;
 }

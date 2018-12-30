@@ -122,9 +122,9 @@ inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPo
 int dx[]={1,0,-1,0};
 int dy[]={0,1,0,-1};*/
 
-#define MAX 20005
+#define MAX 12
 
-pii doll[MAX];
+ll numC[MAX];
 
 int main()
 {
@@ -140,16 +140,57 @@ the following lines in main function.*/
 	
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
-	int T,n;
-	cin>>T;
 
-	while(T--){
-		cin>>n;
-		FOR(i,0,n)
-			cin>>doll[i].fi>>doll[i].se;
-		
-		//todo : didn't understood how the LIS can be applied to this problem
-		
+	int n,tmp;
+	cin>>n;
+	FOR(i,0,n){
+		cin>>tmp;
+		numC[tmp]++;
 	}
+
+	int totalGroups = n/3;
+
+	int _126 = 0,_124=0,_136=0;
+
+	if(numC[5]||numC[7]){
+		cout<<-1<<endl;
+		return 0;
+	}
+	_136 = min(numC[1],min(numC[3],numC[6]));
+	numC[1]-=_136;
+	numC[3]-=_136;
+	numC[6]-=_136;
+
+	_126 = min(numC[1],min(numC[2],numC[6]));
+	numC[1]-=_126;
+	numC[2]-=_126;
+	numC[6]-=_126;
+
+	_124 = min(numC[1],min(numC[2],numC[4]));
+	numC[1]-=_124;
+	numC[2]-=_124;
+	numC[4]-=_124;
+
+	// cout<<_124<<" "<<_126<<" "<<_136<<endl;
+
+	for(int i=1;i<8;i++)
+		if(numC[i])
+			{	
+				// cout<<numC[i]<<" "<<i<<endl;
+				cout<<-1<<endl;
+				return 0;
+			}
+	
+	FOR(i,0,_124)
+		cout<<1<<" "<<2<<" "<<4<<endl;
+	FOR(i,0,_126)
+		cout<<1<<" "<<2<<" "<<6<<endl;
+	FOR(i,0,_136)
+		cout<<1<<" "<<3<<" "<<6<<endl;
+	
+
+
+	
+
 	return 0;
 }

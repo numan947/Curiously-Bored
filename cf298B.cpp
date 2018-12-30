@@ -118,13 +118,12 @@ inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPo
 */
 
 
-/*//4 directional movement
+//4 directional movement
+//E, N, W, S
+int dy[]={0,1,0,-1};
 int dx[]={1,0,-1,0};
-int dy[]={0,1,0,-1};*/
 
-#define MAX 20005
-
-pii doll[MAX];
+#define MAX 12
 
 int main()
 {
@@ -140,16 +139,49 @@ the following lines in main function.*/
 	
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
-	int T,n;
-	cin>>T;
 
-	while(T--){
-		cin>>n;
-		FOR(i,0,n)
-			cin>>doll[i].fi>>doll[i].se;
-		
-		//todo : didn't understood how the LIS can be applied to this problem
-		
+	char ch;
+	int t,ex,ey,sx,sy;
+
+	cin>>t>>sx>>sy>>ex>>ey;
+	int cnt = 0;
+	FOR(i,0,t){
+		cin>>ch;
+		cnt++;
+		int tmpx = sx,tmpy = sy;
+		switch(ch){
+			case 'S':
+				tmpx+=dx[3];
+				tmpy+=dy[3];
+				break;
+			case 'E':
+				tmpx+=dx[0];
+				tmpy+=dy[0];
+				break;
+			case 'N':
+				tmpx+=dx[1];
+				tmpy+=dy[1];
+				break;
+			case 'W':
+				tmpx+=dx[2];
+				tmpy+=dy[2];
+				break;
+		}
+
+		if((abs(ex-sx)+abs(ey-sy))>(abs(ex-tmpx)+abs(ey-tmpy))){
+			sx = tmpx;
+			sy = tmpy;
+		}
+		if(sx==ex && sy==ey)
+			break;
 	}
+
+	// cout<<sx<<" "<<sy<<endl;
+
+	if(sx==ex && sy==ey)
+		cout<<cnt<<endl;
+	else
+		cout<<-1<<endl;
+
 	return 0;
 }

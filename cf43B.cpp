@@ -122,9 +122,13 @@ inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPo
 int dx[]={1,0,-1,0};
 int dy[]={0,1,0,-1};*/
 
-#define MAX 20005
+#define MAX 66
 
-pii doll[MAX];
+
+int paper[MAX];
+int letter[MAX];
+
+
 
 int main()
 {
@@ -140,16 +144,49 @@ the following lines in main function.*/
 	
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
-	int T,n;
-	cin>>T;
 
-	while(T--){
-		cin>>n;
-		FOR(i,0,n)
-			cin>>doll[i].fi>>doll[i].se;
-		
-		//todo : didn't understood how the LIS can be applied to this problem
-		
+	string s1,s2;
+
+	getline(cin,s1);
+	getline(cin,s2);
+
+	for(int i=0;i<s1.size();i++){
+		if(s1[i]==' ')
+			continue;
+		else if(((int)s1[i])>=97){
+			//lower case
+			paper[((int)s1[i])-97]++;
+		}
+		else{
+			//upper case
+			paper[((int)s1[i])-65+26]++;
+		}
 	}
+	
+	for(int i=0;i<s2.size();i++){
+		if(s2[i]==' ')
+			continue;
+		else if(((int)s2[i])>=97){
+			//lower case
+			letter[((int)s2[i])-97]++;
+		}
+		else{
+			//upper case
+			letter[((int)s2[i])-65+26]++;
+		}
+	}
+
+	FOR(i,0,MAX){
+		if(letter[i]>paper[i]){
+			cout<<"NO"<<endl;
+			return 0;
+		}
+	}
+
+	cout<<"YES"<<endl;
+
+
+	
+
 	return 0;
 }

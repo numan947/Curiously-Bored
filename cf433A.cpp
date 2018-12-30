@@ -122,10 +122,8 @@ inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPo
 int dx[]={1,0,-1,0};
 int dy[]={0,1,0,-1};*/
 
-#define MAX 20005
-
-pii doll[MAX];
-
+#define MAX 102
+int w[MAX];
 int main()
 {
 /*The standard C++ I/O functions (cin/cout) flush the buffer 
@@ -140,16 +138,40 @@ the following lines in main function.*/
 	
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
-	int T,n;
-	cin>>T;
 
-	while(T--){
-		cin>>n;
-		FOR(i,0,n)
-			cin>>doll[i].fi>>doll[i].se;
-		
-		//todo : didn't understood how the LIS can be applied to this problem
-		
+	int n;
+	cin>>n;
+	if(n==1){
+		cout<<"NO"<<endl;
+		return 0;
 	}
+
+	int total = 0;
+	int _100=0,_200=0;
+	FOR(i,0,n){
+		cin>>w[i];
+		if(w[i]==100)
+			_100++;
+		else
+			_200++;
+		total+=w[i];
+	}
+
+	if((total/20)%2){
+		cout<<"NO"<<endl;
+		return 0;
+	}
+
+	if(_100==0 && _200%2)
+		{cout<<"NO"<<endl;return 0;}
+
+	
+
+	cout<<"YES"<<endl;
+
+
+
+	
+
 	return 0;
 }
