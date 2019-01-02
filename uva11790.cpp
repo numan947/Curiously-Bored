@@ -122,7 +122,14 @@ inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPo
 int dx[]={1,0,-1,0};
 int dy[]={0,1,0,-1};*/
 
-#define MAX 12
+#define MAX 10002
+
+ll lis[MAX];
+ll lds[MAX];
+
+ll h[MAX];
+ll w[MAX];
+
 
 int main()
 {
@@ -138,6 +145,49 @@ the following lines in main function.*/
 	
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
+
+	int N,TC,KS=0;
+	cin>>TC;
+
+	while(TC--){
+		cin>>N;
+		FOR(i,0,N)
+			cin>>h[i];
+		FOR(i,0,N){
+			cin>>w[i];
+			lds[i] = lis[i] = w[i];
+		}
+
+		ll mx = w[0],mn= w[0];
+		// lis[0] = lds[0] = w[0];
+
+		for(int i=1;i<N;i++){
+			for(int j=i-1;j>=0;j--){
+				if(h[i]>h[j]){
+					lis[i] = max(lis[i],lis[j]+w[i]);
+				}
+			}
+			mx = max(mx,lis[i]);
+		}
+		for(int i=1;i<N;i++){
+			for(int j=i-1;j>=0;j--){
+				if(h[i]<h[j]){
+					lds[i] = max(lds[i],lds[j]+w[i]);
+				}
+			}
+			mn = max(mn,lds[i]);
+		}
+
+		if(mx>=mn){
+			printf("Case %d. Increasing (%d). Decreasing (%d).\n",++KS,mx,mn);
+		}else{
+			printf("Case %d. Decreasing (%d). Increasing (%d).\n",++KS,mn,mx);
+		}
+
+		// cout<<mx<<endl;
+		// cout<<mn<<endl;
+
+	}
 	
 
 	return 0;
