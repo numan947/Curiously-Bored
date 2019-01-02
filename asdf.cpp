@@ -1,83 +1,81 @@
-/*
-    AUST_royal.flush
-*/
-#include <bits/stdc++.h>
-#define pb push_back
-#define all(x) x.begin(),x.end()
-#define ms(a,v) memset(a,v,sizeof a)
-#define II ({int a; scanf("%d", &a); a;})
-#define LL ({Long a; scanf("%lld", &a); a;})
-#define DD ({double a; scanf("%lf", &a); a;})
-#define EPS 1e-10
-#define pi 3.1415926535897932384626433832795
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
 using namespace std;
-
-typedef long long Long;
-typedef unsigned long long ull;
-typedef vector<int> vi ;
-typedef set<int> si;
-typedef vector<Long>vl;
-typedef pair<int,int>pii;
-typedef pair<Long,Long>pll;
-typedef pair<double,double>pdd;
-
-#define forab(i, a, b)	for (__typeof (b) i = (a) ; i <= b ; ++i)
-#define rep(i, n)		forab (i, 0, (n) - 1)
-#define For(i, n)		forab (i, 1, n)
-#define rofba(i, a, b)	for (__typeof (b)i = (b) ; i >= a ; --i)
-#define per(i, n)		rofba (i, 0, (n) - 1)
-#define rof(i, n)		rofba (i, 1, n)
-#define forstl(i, s)	for (__typeof ((s).end ()) i = (s).begin (); i != (s).end (); ++i)
-
-const int MX = 307 ;
-const int INF = 1e8 + 7;
-
-
-#define MX 200007
-const int inf = 1e8 + 7 ;
-struct Node{ int x,y ; };
-
-Node Block[MX];
-int N ;
-
-// condition : x2 > x1 and y2 > y1
-bool cmp(Node a,Node b){
-    if( a.y == b.y ) return a.x < b.x;
-    return a.y > b.y;
+void findLIS(int N, int LIS[], int pos[], int A[]) {
+	int i, L = -1, l, r, m, newSet;
+	int j;
+	for(i = 0; i < N; i++) {
+		l = 0, r = L, newSet = -1;
+		while(l <= r) {
+			m = (l+r)/2;
+			if(pos[m] <= A[i]) {
+				if(m == L || pos[m+1] > A[i]) {
+					newSet = m+1;break;
+				} else
+					l = m+1;
+			} else {
+				r = m-1;
+			}
+		}
+		if(newSet == -1)	newSet++;
+		pos[newSet] = A[i];
+		LIS[i] = newSet+1;
+		if(L < newSet)	L = newSet;
+	}
 }
-
-int Doll(){
-    vi v ;
-    sort(Block,Block+N,cmp);
-    for(int i=0;i<N;i++)
-        cout<<Block[i].x<<" "<<Block[i].y<<endl;
-    v.push_back(inf);
-    int ans = 0;
-    rep(i,N) {
-        int now = Block[i].x;
-        int Idx = lower_bound(all(v),now+1)-v.begin();
-        if( Idx == v.size()-1) {
-            ans++;
-            v.push_back(inf);
-        }
-        v[Idx] = now;
-    }
-    for(int i=0;i<v.size();i++)
-        cout<<v[i]<<" ";
-    cout<<endl;
-    return ans;
+void findLDS(int N, int LDS[], int pos[], int A[]) {
+	int i, L = -1, l, r, m, newSet;
+	int j;
+	for(i = 0; i < N; i++) {
+		l = 0, r = L, newSet = -1;
+		while(l <= r) {
+			m = (l+r)/2;
+			if(pos[m] >= A[i]) {
+				if(m == L || pos[m+1] < A[i]) {
+					newSet = m+1;break;
+				} else
+					l = m+1;
+			} else {
+				r = m-1;
+			}
+		}
+		if(newSet == -1)	newSet++;
+		pos[newSet] = A[i];
+		LDS[i] = newSet+1;
+		if(L < newSet)	L = newSet;
+	}
 }
+int main() {
+	freopen("input.txt", "r", stdin);
+    int T, N, i;
+	int A[2001], LDS[2001], LIS[2001], pos[2001];
+	scanf("%d", &T);
+	while(T--) {
+		scanf("%d", &N);
+		for(i = 0; i < N; i++)
+			scanf("%d", &A[N-i-1]);
+		findLIS(N, LIS, pos, A);
+		findLDS(N, LDS, pos, A);
+		int max = 0;
+
+        for(int i=0;i<N;i++)
+            cout<<A[i]<<" ";
+        cout<<endl;
+
+        for(int i=0;i<N;i++)
+            cout<<LIS[i]<<" ";
+        cout<<endl;
+        for(int i=0;i<N;i++)
+            cout<<LDS[i]<<" ";
+        cout<<endl;
 
 
-int main(){
-    
-    freopen ("input.txt", "r", stdin);
-       //freopen ("out.txt","w",stdout);
-    
-    int test = II ;
-    For(cs,test){
-        N = II ;
-        rep(i,N) Block[i].x = II , Block[i].y = II ;
-        printf("%d\n",Doll());
-    }
+		for(i = 0; i < N; i++) {
+			if(LIS[i]+LDS[i]-1 > max) 
+				max = LIS[i]+LDS[i]-1;
+		}
+		printf("%d\n", max);
+	}
+    return 0;
 }
