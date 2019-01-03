@@ -122,29 +122,29 @@ inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPo
 int dx[]={1,0,-1,0};
 int dy[]={0,1,0,-1};*/
 
-#define MAX 4012
-int n,a,b,c;
+#define MAX 122
+ll gold[MAX];
+ll dp[MAX][25012];
+int n;
 
-ll dp[MAX];
-
-int cut(int left)
+int findMin(int idx,ll p1, ll p2)
 {
-	if(left==0)
-		return 0;
-	if(left<a && left<b && left<c)
-		return -INF;
+	if(idx==n)
+		return abs(p1-p2);
+	if(dp[idx][p1]!=INF)
+		return dp[idx][p1];
+	ll tmp = INF;
+	if(p2-gold[idx]>=0)
+		tmp = min(tmp,1LL*findMin(idx+1,p1+gold[idx],p2-gold[idx]));
 	
-	if(dp[left]!=-1)
-		return dp[left];
-	
-	// int mx = 0;
+	tmp = min(tmp,1LL*findMin(idx+1,p1,p2));
 
-	int tmp1 = 1+cut(left-a);
-	int tmp2 = 1+cut(left-b);
-	int tmp3 = 1+cut(left-c);
-
-	return dp[left] = max(tmp1,max(tmp2,tmp3));
+	return dp[idx][p1] = tmp;
 }
+
+
+
+
 
 int main()
 {
@@ -161,10 +161,31 @@ the following lines in main function.*/
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
 
+	int TC;
+	cin>>TC;
 	
-	cin>>n>>a>>b>>c;
-	ms(dp,-1);
-	cout<<cut(n)<<endl;
+
+	while(TC--){
+		cin>>n;
+		ll sub2 = 0;
+		FOR(i,0,n){
+			cin>>gold[i];
+			sub2+=gold[i];
+		}
+		FOR(j,0,n)
+			FOR(i,0,sub2+10)
+				dp[j][i] = INF;
+		// cout<<dp[0]<<endl;
+
+
+		cout<<findMin(0,0,sub2)<<endl;
+		
+		// FOR(i,0,sub2)
+		// 	cout<<dp[i]<<" ";
+		// cout<<endl;
+
+
+	}
 	
 
 	return 0;

@@ -122,29 +122,9 @@ inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPo
 int dx[]={1,0,-1,0};
 int dy[]={0,1,0,-1};*/
 
-#define MAX 4012
-int n,a,b,c;
+#define MAX 300005
 
-ll dp[MAX];
-
-int cut(int left)
-{
-	if(left==0)
-		return 0;
-	if(left<a && left<b && left<c)
-		return -INF;
-	
-	if(dp[left]!=-1)
-		return dp[left];
-	
-	// int mx = 0;
-
-	int tmp1 = 1+cut(left-a);
-	int tmp2 = 1+cut(left-b);
-	int tmp3 = 1+cut(left-c);
-
-	return dp[left] = max(tmp1,max(tmp2,tmp3));
-}
+ll ara[MAX];
 
 int main()
 {
@@ -160,11 +140,24 @@ the following lines in main function.*/
 	
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
+	ll n;
+	cin>>n;
+	FOR(i,0,n)
+	{
+		cin>>ara[i];
+		ara[i]--;
+	}
+
+	sort(ara,ara+n);
+
+	ll cnt = 0;
+
+	FOR(i,0,n)
+		cnt+=abs(i-ara[i]);
+	cout<<cnt<<endl;
+
 
 	
-	cin>>n>>a>>b>>c;
-	ms(dp,-1);
-	cout<<cut(n)<<endl;
 	
 
 	return 0;

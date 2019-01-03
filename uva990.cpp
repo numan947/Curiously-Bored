@@ -122,29 +122,45 @@ inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPo
 int dx[]={1,0,-1,0};
 int dy[]={0,1,0,-1};*/
 
-#define MAX 4012
-int n,a,b,c;
+#define MAX 40
 
-ll dp[MAX];
+int t,w,n;
 
-int cut(int left)
+int dp[MAX][1015];
+
+int graph[MAX][1015];
+
+pii treas[MAX];
+
+vector<pii>solution;
+
+int diveForGold(int idx, int totalAirLeft)
 {
-	if(left==0)
+	if(totalAirLeft==0||idx<0)
 		return 0;
-	if(left<a && left<b && left<c)
+	else if(totalAirLeft<0)
 		return -INF;
 	
-	if(dp[left]!=-1)
-		return dp[left];
+	if(dp[idx][totalAirLeft]!=-1)
+		return dp[idx][totalAirLeft];
 	
-	// int mx = 0;
+	ll tmp = -1;
 
-	int tmp1 = 1+cut(left-a);
-	int tmp2 = 1+cut(left-b);
-	int tmp3 = 1+cut(left-c);
+	if(treas[idx].fi<=totalAirLeft){
+		tmp = max(tmp,1LL*diveForGold(idx-1,totalAirLeft-treas[idx].fi)+treas[idx].se);
+		graph[idx][totalAirLeft] = -2;
+	}
+	ll tmp2 = 1LL*diveForGold(idx-1,totalAirLeft);
 
-	return dp[left] = max(tmp1,max(tmp2,tmp3));
+	if(tmp2>tmp){
+		tmp = tmp2;
+		graph[idx][totalAirLeft] = -1;
+	}
+	
+	dp[idx][totalAirLeft] = tmp;
+	return tmp;
 }
+
 
 int main()
 {
@@ -159,13 +175,43 @@ the following lines in main function.*/
 	cout.tie(0);
 	
 	freopen("input.txt", "r", stdin);
-	// freopen("output.txt", "w", stdout);
+	freopen("output.txt", "w", stdout);
+	int KS=0;
+	while(cin>>t>>w){
+		if(KS++)
+			cout<<endl;
+		cin>>n;
 
-	
-	cin>>n>>a>>b>>c;
-	ms(dp,-1);
-	cout<<cut(n)<<endl;
-	
+		FOR(i,0,n){
+			cin>>treas[i].fi>>treas[i].se;
+			treas[i].fi*=3*w;
+		}
+
+		// FOR(i,0,n)
+		// 	cout<<treas[i].fi<<" "<<treas[i].se<<endl;
+
+
+		ms(dp,-1);
+		ms(graph,0);
+		solution.clear();
+
+
+		cout<<diveForGold(n-1,t)<<endl;
+		
+		int ww = t,idx = n-1;
+		while(idx>=0 && ww){
+			if(graph[idx][ww]==-2){
+				// cout<<idx<<endl;
+				solution.pb(treas[idx]);				
+				// cout<<treas[idx].fi/(3*w)<<" "<<treas[idx].se<<endl;
+				ww-=treas[idx].fi;
+			}
+			idx--;
+		}
+		cout<<solution.size()<<endl;
+		FORd(i,solution.size(),0)
+			cout<<solution[i].fi/(3*w)<<" "<<solution[i].se<<endl;
+	}
 
 	return 0;
 }

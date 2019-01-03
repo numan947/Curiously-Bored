@@ -122,28 +122,21 @@ inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPo
 int dx[]={1,0,-1,0};
 int dy[]={0,1,0,-1};*/
 
-#define MAX 4012
-int n,a,b,c;
+#define MAX 1000009
 
-ll dp[MAX];
+bool nprime[MAX];
 
-int cut(int left)
+void createSieve(ll n)
 {
-	if(left==0)
-		return 0;
-	if(left<a && left<b && left<c)
-		return -INF;
-	
-	if(dp[left]!=-1)
-		return dp[left];
-	
-	// int mx = 0;
+	ms(nprime,0);
+	nprime[1] = nprime[0] = 1;
 
-	int tmp1 = 1+cut(left-a);
-	int tmp2 = 1+cut(left-b);
-	int tmp3 = 1+cut(left-c);
+	for(ll i=2;i<=sqrt(n);i++){
+		for(ll j=i*i;j<=n;j+=i)
+			if(!nprime[i])
+				nprime[j] = 1;
+	}
 
-	return dp[left] = max(tmp1,max(tmp2,tmp3));
 }
 
 int main()
@@ -160,11 +153,18 @@ the following lines in main function.*/
 	
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
-
-	
-	cin>>n>>a>>b>>c;
-	ms(dp,-1);
-	cout<<cut(n)<<endl;
+	createSieve(1000005);
+	int n;
+	ll tmp;
+	cin>>n;
+	FOR(i,0,n){
+		cin>>tmp;
+		ll root = sqrt(tmp);
+		if(!nprime[root] && root*root==tmp)
+			cout<<"YES"<<endl;
+		else
+			cout<<"NO"<<endl;
+	}
 	
 
 	return 0;

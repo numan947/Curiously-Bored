@@ -122,29 +122,7 @@ inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPo
 int dx[]={1,0,-1,0};
 int dy[]={0,1,0,-1};*/
 
-#define MAX 4012
-int n,a,b,c;
-
-ll dp[MAX];
-
-int cut(int left)
-{
-	if(left==0)
-		return 0;
-	if(left<a && left<b && left<c)
-		return -INF;
-	
-	if(dp[left]!=-1)
-		return dp[left];
-	
-	// int mx = 0;
-
-	int tmp1 = 1+cut(left-a);
-	int tmp2 = 1+cut(left-b);
-	int tmp3 = 1+cut(left-c);
-
-	return dp[left] = max(tmp1,max(tmp2,tmp3));
-}
+#define MAX 12
 
 int main()
 {
@@ -160,11 +138,90 @@ the following lines in main function.*/
 	
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
-
+	char ex[4][4];
+	FOR(i,0,4)
+		FOR(j,0,4)
+			cin>>ex[i][j];
 	
-	cin>>n>>a>>b>>c;
-	ms(dp,-1);
-	cout<<cut(n)<<endl;
+	bool ok = false;
+	for(int i=0;i<3&&!ok;i++){
+		for(int j=0;j<3&&!ok;j++){
+
+			if(ex[i][j]==ex[i+1][j]&&
+			   ex[i][j]==ex[i+1][j+1]&&
+			   ex[i][j]==ex[i][j+1]&&
+			   ex[i+1][j]==ex[i+1][j+1]&&
+			   ex[i+1][j]==ex[i][j+1]&&
+			   ex[i][j+1]==ex[i+1][j+1]
+			)ok = true;
+			
+			
+			char tmp = ex[i][j];
+			if(tmp=='.')
+				ex[i][j] = '#';
+			else
+				ex[i][j] = '.';
+			if(ex[i][j]==ex[i+1][j]&&
+			   ex[i][j]==ex[i+1][j+1]&&
+			   ex[i][j]==ex[i][j+1]&&
+			   ex[i+1][j]==ex[i+1][j+1]&&
+			   ex[i+1][j]==ex[i][j+1]&&
+			   ex[i][j+1]==ex[i+1][j+1]
+			)ok = true;
+			ex[i][j] = tmp;
+
+
+
+			tmp = ex[i+1][j];
+			if(tmp=='.')
+				ex[i+1][j] = '#';
+			else
+				ex[i+1][j] = '.';
+			if(ex[i][j]==ex[i+1][j]&&
+			   ex[i][j]==ex[i+1][j+1]&&
+			   ex[i][j]==ex[i][j+1]&&
+			   ex[i+1][j]==ex[i+1][j+1]&&
+			   ex[i+1][j]==ex[i][j+1]&&
+			   ex[i][j+1]==ex[i+1][j+1]
+			)ok = true;
+			ex[i+1][j] = tmp;
+
+
+
+			tmp = ex[i][j+1];
+			if(tmp=='.')
+				ex[i][j+1] = '#';
+			else
+				ex[i][j+1] = '.';
+			if(ex[i][j]==ex[i+1][j]&&
+			   ex[i][j]==ex[i+1][j+1]&&
+			   ex[i][j]==ex[i][j+1]&&
+			   ex[i+1][j]==ex[i+1][j+1]&&
+			   ex[i+1][j]==ex[i][j+1]&&
+			   ex[i][j+1]==ex[i+1][j+1]
+			)ok = true;
+			ex[i][j+1] = tmp;
+
+			
+			tmp = ex[i+1][j+1];
+			if(tmp=='.')
+				ex[i+1][j+1] = '#';
+			else
+				ex[i+1][j+1] = '.';
+			if(ex[i][j]==ex[i+1][j]&&
+			   ex[i][j]==ex[i+1][j+1]&&
+			   ex[i][j]==ex[i][j+1]&&
+			   ex[i+1][j]==ex[i+1][j+1]&&
+			   ex[i+1][j]==ex[i][j+1]&&
+			   ex[i][j+1]==ex[i+1][j+1]
+			)ok = true;
+			ex[i+1][j+1] = tmp;
+		}
+	}
+	if(ok)
+		cout<<"YES"<<endl;
+	else
+		cout<<"NO"<<endl;
 	
 
 	return 0;
