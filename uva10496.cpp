@@ -95,6 +95,7 @@ const ld EPS = 1e-6;
 // inline string customStrip(string in,string delim){string ret = "";for(int i=0;i<in.size();i++){if(delim.find(in[i],0)==std::string::npos)ret+=in[i];}return ret;}
 // inline string commaSeparate(long long value){string numWithCommas = to_string(value);int insertPosition = numWithCommas.length() - 3;while (insertPosition > 0) {numWithCommas.insert(insertPosition, ",");insertPosition-=3;}return numWithCommas;}
 // inline string strip(string s){int i=0;while(i<s.size()){if(isspace(s[i]))i++;else break;}s.erase(0,i);i = s.size()-1;while(i>=0){if(isspace(s[i]))i--;else break;}s.erase(i+1,s.size()-i-1);return s;}
+// template <typename T> int sgn(T val) {return (T(0) < val) - (val < T(0));}
 
 //errors
 #define db(x) cerr << #x << " = " << (x) << "\n";
@@ -124,28 +125,36 @@ int dy[]={0,1,0,-1};*/
 
 #define MAX 12
 
-int memo[202][22];
-int dress[22][22];
-int N,M,C;
+int gridX,gridY,n;
+pii pos[MAX];
 
+int dist[MAX][MAX];
+int dp[MAX][(1<<MAX)];
 
-int solveRecursion(int moneyLeft, int currentDress)
+int distCal(pii a, pii b)
 {
-	if(moneyLeft<0)
-		return -INF;
-	if(currentDress==C){
-		return M-moneyLeft;
-	}
-	int &ans=memo[moneyLeft][currentDress];
-	if(ans>=0)
-		return ans;
-	
-	for(int i=1;i<=dress[currentDress][0];i++){
-		ans = max(ans,solveRecursion(moneyLeft-dress[currentDress][i],currentDress+1));
-	}
-
-	return ans;
+	return abs(a.fi-b.fi)+abs(a.se-b.se);
 }
+
+
+
+ll tspSolution(int cur, int mask)
+{
+	if(mask==((1<<(n))-1))
+		return distCal(pos[0],pos[cur]);
+	
+	if(dp[cur][mask]!=-1)
+		return dp[cur][mask];
+
+	ll mini = INF;
+	for(int i=0;i<n;i++){
+		if(!bit(mask,i) && i!=cur){
+			mini = min(mini,distCal(pos[i],pos[cur])+tspSolution(i,mask|(1<<i)));
+		}
+	}
+	return dp[cur][mask] = mini;
+}
+
 
 
 
@@ -163,27 +172,18 @@ the following lines in main function.*/
 	
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
+	int tc,tmpX,tmpY;
+	cin>>tc;
 
-	
-	cin>>N;
-
-	while(N--){
-		ms(memo,-1);
-		cin>>M>>C;
-		FOR(i,0,C){
-			cin>>dress[i][0];
-			FOR(j,1,dress[i][0]+1)
-				cin>>dress[i][j];
-		}
-
-		int targetMoney = solveRecursion(M,0);
-
-		// cout<<memo[M][0]<<endl;
-
-		if(targetMoney<0)
-			cout<<"no solution"<<endl;
-		else
-			cout<<targetMoney<<endl;
+	while(tc--){
+		cin>>gridX>>gridY;
+		cin>>pos[0].fi>>pos[0].se;
+		cin>>n;
+		n++;
+		FOR(i,1,n)
+			cin>>pos[i].fi>>pos[i].se;
+		ms(dp,-1);
+		cout<<"The shortest path has length "<<tspSolution(0,1)<<endl;
 
 	}
 	

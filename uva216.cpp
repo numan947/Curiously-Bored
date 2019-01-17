@@ -24,8 +24,8 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 
 #define ms(s, n) memset(s, n, sizeof(s))
 
-#define FOR(i, a, b) for (int i = (a); i < (b); ++i)
-#define FORd(i, a, b) for (int i = (a) - 1; i >= (b); --i)
+#define FOR(nxt, a, b) for (int nxt = (a); nxt < (b); ++nxt)
+#define FORd(nxt, a, b) for (int nxt = (a) - 1; nxt >= (b); --nxt)
 #define FORall(it, a) for (__typeof((a).begin()) it = (a).begin(); it != (a).end(); it++)
 
 #define mapHas(t, x) (t.find(x) != t.end()) //for map
@@ -43,11 +43,11 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 
 
 //bit manipulation
-#define bit(n, i) (((n) >> (i)) & 1) //check bit
-#define setBit(n,i) (n|=(1<<i)) //set i'th bit of n
-#define checkBit(n,i) (n &(1<<i)) //check i'th bit of n
-#define resetBit(n,i) (n&=~(1<<i)) //reset i'th bit of n
-#define toggleBit(n,i) (n^=(1<<i)) //toggle i'th bit of n
+#define bit(n, nxt) (((n) >> (nxt)) & 1) //check bit
+#define setBit(n,nxt) (n|=(1<<nxt)) //set nxt'th bit of n
+#define checkBit(n,nxt) (n &(1<<nxt)) //check nxt'th bit of n
+#define resetBit(n,nxt) (n&=~(1<<nxt)) //reset nxt'th bit of n
+#define toggleBit(n,nxt) (n^=(1<<nxt)) //toggle nxt'th bit of n
 #define lsOnBit(n) (n&(-n)) //get lsb of n that is on
 #define turnOnAll(n) ((1<<n) - 1) //turn on size of n bits from right (kind of opposite of clear)
 #define remainder(s,n) (s & (n-1)) //remainder of s when divided by n, where n is power of 2
@@ -91,16 +91,17 @@ const ld EPS = 1e-6;
 //some helper functions for input processing
 
 // inline void tokenize(string str,vector<string> &tokens, string delim){ tokens.clear();size_t s = str.find_first_not_of(delim), e=s; while(s!=std::string::npos){e=str.find(delim,s);tokens.push_back(str.substr(s,e-s));s=str.find_first_not_of(delim,e);}}
-// inline bool isPalindrome(string str){for(int i=0;i<(str.size())/2;i++)if(str[i]!=str[str.size()-1-i])return false;return true;}
-// inline string customStrip(string in,string delim){string ret = "";for(int i=0;i<in.size();i++){if(delim.find(in[i],0)==std::string::npos)ret+=in[i];}return ret;}
+// inline bool isPalindrome(string str){for(int nxt=0;nxt<(str.size())/2;nxt++)if(str[nxt]!=str[str.size()-1-nxt])return false;return true;}
+// inline string customStrip(string in,string delim){string ret = "";for(int nxt=0;nxt<in.size();nxt++){if(delim.find(in[nxt],0)==std::string::npos)ret+=in[nxt];}return ret;}
 // inline string commaSeparate(long long value){string numWithCommas = to_string(value);int insertPosition = numWithCommas.length() - 3;while (insertPosition > 0) {numWithCommas.insert(insertPosition, ",");insertPosition-=3;}return numWithCommas;}
-// inline string strip(string s){int i=0;while(i<s.size()){if(isspace(s[i]))i++;else break;}s.erase(0,i);i = s.size()-1;while(i>=0){if(isspace(s[i]))i--;else break;}s.erase(i+1,s.size()-i-1);return s;}
+// inline string strip(string s){int nxt=0;while(nxt<s.size()){if(isspace(s[nxt]))nxt++;else break;}s.erase(0,nxt);nxt = s.size()-1;while(nxt>=0){if(isspace(s[nxt]))nxt--;else break;}s.erase(nxt+1,s.size()-nxt-1);return s;}
+// template <typename T> int sgn(T val) {return (T(0) < val) - (val < T(0));}
 
 //errors
 #define db(x) cerr << #x << " = " << (x) << "\n";
 #define endl '\n'
 
-/*
+
 //double comparisons and ops
 //d1==d2
 inline bool EQ(double d1,double d2){return fabs(d1-d2)<EPS;}
@@ -114,37 +115,54 @@ inline bool GTE(double d1, double d2){return GT(d1,d2)||EQ(d1,d2);}
 inline bool LTE(double d1,double d2){return LT(d1,d2)||EQ(d1,d2);}
 //numPosAfterDecimal={10,100,1000,10000,....}
 //Roundoff(3.56985,10000) = 3.5699
-inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPosAfterDecimal)/numPosAfterDecimal;}
-*/
+inline long double Roundoff(long double val,int numPosAfterDecimal){return round(val*numPosAfterDecimal)/numPosAfterDecimal;}
+
 
 
 /*//4 directional movement
 int dx[]={1,0,-1,0};
 int dy[]={0,1,0,-1};*/
 
-#define MAX 12
+#define MAX 515
 
-int memo[202][22];
-int dress[22][22];
-int N,M,C;
+pii comp[9];
+ld dp[9][MAX];
+bool vis[9][MAX];
+int par[9][MAX];
+int n;
 
+vector<pii>orderBag;
 
-int solveRecursion(int moneyLeft, int currentDress)
+ld distCal(pii a, pii b)
 {
-	if(moneyLeft<0)
-		return -INF;
-	if(currentDress==C){
-		return M-moneyLeft;
-	}
-	int &ans=memo[moneyLeft][currentDress];
-	if(ans>=0)
-		return ans;
-	
-	for(int i=1;i<=dress[currentDress][0];i++){
-		ans = max(ans,solveRecursion(moneyLeft-dress[currentDress][i],currentDress+1));
-	}
+	ld dd = sqrt(((a.fi-b.fi)*(a.fi-b.fi))+((a.se-b.se)*(a.se-b.se)));
+	return dd;
+}
 
-	return ans;
+long double gofish(int cur, int mask)
+{
+	// bitset<9>tt(mask);
+	// cout<<tt<<endl;
+	if (mask==((1<<(n))-1))
+		return 0;
+	
+	if(vis[cur][mask])
+		return dp[cur][mask];
+	
+	ld mini = INF;
+	int mnNxt = -1;
+	for(int nxt=0;nxt<n;nxt++){	
+		if(!bit(mask,nxt) && cur!=nxt){
+			ld tmp = distCal(comp[cur],comp[nxt])+gofish(nxt,mask|(1<<nxt));
+			if(tmp<mini){
+				mnNxt = nxt;
+				mini = tmp;
+				par[cur][mask] = nxt;
+			}
+		}
+	}
+	vis[cur][mask] = 1;
+	return dp[cur][mask] = mini;
 }
 
 
@@ -163,27 +181,65 @@ the following lines in main function.*/
 	
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
-
-	
-	cin>>N;
-
-	while(N--){
-		ms(memo,-1);
-		cin>>M>>C;
-		FOR(i,0,C){
-			cin>>dress[i][0];
-			FOR(j,1,dress[i][0]+1)
-				cin>>dress[i][j];
+	int KS=0;
+	while(cin>>n && n){
+		FOR(nxt,0,n){
+			cin>>comp[nxt].fi>>comp[nxt].se;
+		}
+		sort(comp,comp+n);
+/* 		FOR(nxt,0,n){
+			dist[nxt][nxt] = 0;
+			FOR(j,nxt+1,n){
+				dist[nxt][j] = dist[j][nxt] = distCal(comp[nxt],comp[j]);
+			}
 		}
 
-		int targetMoney = solveRecursion(M,0);
+		FOR(nxt,0,n){
+			FOR(j,0,n){
+				cout<<setw(5)<<prec(2)<<dist[nxt][j]<<" ";
+			}
+			cout<<endl;
+		} */
+		
+		// cout<<n<<endl;
 
-		// cout<<memo[M][0]<<endl;
+		ms(vis,0); 
+		ms(par,-1);
 
-		if(targetMoney<0)
-			cout<<"no solution"<<endl;
-		else
-			cout<<targetMoney<<endl;
+		ld miniAns = INF;
+		int curNode = 0;
+		for(int i=0;i<n;i++){
+			ld tmp = gofish(i,1<<(i));
+			if(LT(tmp,miniAns)){
+				miniAns = tmp;
+				curNode = i;
+			}
+		}
+		
+		long double total = 16*(n-1)+ miniAns;
+
+		
+		int curMask = (1<<curNode);
+		int path[9];
+		int path_cnt = 0;
+
+		while(curNode!=-1){
+			path[path_cnt++] = curNode;
+			curNode = par[curNode][curMask];
+			curMask|=(1<<curNode);
+		}
+		cout<<"**********************************************************"<<endl;
+		cout<<"Network #"<<++KS<<endl;
+		FOR(i,1,n){
+			pii a = comp[path[i-1]];
+			pii b = comp[path[i]];
+			
+
+			cout<<prec(2)<<"Cable requirement to connect ("<<a.fi<<","<<a.se<<") to ("<<b.fi<<","<<b.se<<") is "<<Roundoff(distCal(a,b)+16.0,100)<<" feet."<<endl;
+			// cout<<<<endl;
+		}
+		cout<<prec(2)<<"Number of feet of cable required is "<<Roundoff(total,100)<<"."<<endl;
+
 
 	}
 	

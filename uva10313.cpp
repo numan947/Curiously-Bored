@@ -90,11 +90,12 @@ const ld EPS = 1e-6;
 
 //some helper functions for input processing
 
-// inline void tokenize(string str,vector<string> &tokens, string delim){ tokens.clear();size_t s = str.find_first_not_of(delim), e=s; while(s!=std::string::npos){e=str.find(delim,s);tokens.push_back(str.substr(s,e-s));s=str.find_first_not_of(delim,e);}}
+inline void tokenize(string str,vector<int> &tokens, string delim){ tokens.clear();size_t s = str.find_first_not_of(delim), e=s; while(s!=std::string::npos){e=str.find(delim,s);tokens.push_back(stoi(str.substr(s,e-s)));s=str.find_first_not_of(delim,e);}}
 // inline bool isPalindrome(string str){for(int i=0;i<(str.size())/2;i++)if(str[i]!=str[str.size()-1-i])return false;return true;}
 // inline string customStrip(string in,string delim){string ret = "";for(int i=0;i<in.size();i++){if(delim.find(in[i],0)==std::string::npos)ret+=in[i];}return ret;}
 // inline string commaSeparate(long long value){string numWithCommas = to_string(value);int insertPosition = numWithCommas.length() - 3;while (insertPosition > 0) {numWithCommas.insert(insertPosition, ",");insertPosition-=3;}return numWithCommas;}
 // inline string strip(string s){int i=0;while(i<s.size()){if(isspace(s[i]))i++;else break;}s.erase(0,i);i = s.size()-1;while(i>=0){if(isspace(s[i]))i--;else break;}s.erase(i+1,s.size()-i-1);return s;}
+// template <typename T> int sgn(T val) {return (T(0) < val) - (val < T(0));}
 
 //errors
 #define db(x) cerr << #x << " = " << (x) << "\n";
@@ -122,32 +123,34 @@ inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPo
 int dx[]={1,0,-1,0};
 int dy[]={0,1,0,-1};*/
 
-#define MAX 12
+#define MAX 310
 
-int memo[202][22];
-int dress[22][22];
-int N,M,C;
+ll dp[MAX][MAX][MAX];
 
-
-int solveRecursion(int moneyLeft, int currentDress)
+ll calculate(int curC,int remC, int remM)
 {
-	if(moneyLeft<0)
-		return -INF;
-	if(currentDress==C){
-		return M-moneyLeft;
-	}
-	int &ans=memo[moneyLeft][currentDress];
-	if(ans>=0)
-		return ans;
+	if(remM==0 && remC==0)
+		return 1;
+	if(curC>300||remC<0||remM<0)
+		return 0;
 	
-	for(int i=1;i<=dress[currentDress][0];i++){
-		ans = max(ans,solveRecursion(moneyLeft-dress[currentDress][i],currentDress+1));
+	if(dp[curC][remC][remM]!=-1)
+		return dp[curC][remC][remM];
+	
+	ll wc = 0;
+	if(curC<=remM){
+		for(int i=1;;i++){
+			if(curC*i<=remM)
+				wc+=calculate(curC+1,remC-i,remM-i*curC);
+			else
+				break;
+		}
 	}
+	wc+=calculate(curC+1,remC,remM);
 
-	return ans;
+	return dp[curC][remC][remM] = wc;
+
 }
-
-
 
 int main()
 {
@@ -162,30 +165,35 @@ the following lines in main function.*/
 	cout.tie(0);
 	
 	freopen("input.txt", "r", stdin);
-	// freopen("output.txt", "w", stdout);
+	freopen("output.txt", "w", stdout);
 
-	
-	cin>>N;
-
-	while(N--){
-		ms(memo,-1);
-		cin>>M>>C;
-		FOR(i,0,C){
-			cin>>dress[i][0];
-			FOR(j,1,dress[i][0]+1)
-				cin>>dress[i][j];
+	ll tt[MAX][MAX];
+	ms(tt,0);
+	ms(dp,-1);
+	for(int money = 0;money<=305;money++)
+		for(int cc= 0;cc<=305;cc++){
+			tt[money][cc] = calculate(1,cc,money);
+			if(cc>0)
+				tt[money][cc]+=tt[money][cc-1];
 		}
+	
+	int n,l1,l2;
+	string inp;
+	vector<int>vv;
 
-		int targetMoney = solveRecursion(M,0);
-
-		// cout<<memo[M][0]<<endl;
-
-		if(targetMoney<0)
-			cout<<"no solution"<<endl;
-		else
-			cout<<targetMoney<<endl;
-
+	while(getline(cin,inp)){
+		tokenize(inp,vv," ");
+		if(vv.size()==1){
+			cout<<tt[vv[0]][301]<<endl;
+		}
+		if(vv.size()==2){
+			cout<<tt[vv[0]][min(301,vv[1])]<<endl;
+		}
+		if(vv.size()==3){
+			cout<<tt[vv[0]][min(301,vv[2])] - tt[vv[0]][min(301,vv[1]-1)]<<endl;
+		}
 	}
+	
 	
 
 	return 0;

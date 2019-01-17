@@ -95,6 +95,7 @@ const ld EPS = 1e-6;
 // inline string customStrip(string in,string delim){string ret = "";for(int i=0;i<in.size();i++){if(delim.find(in[i],0)==std::string::npos)ret+=in[i];}return ret;}
 // inline string commaSeparate(long long value){string numWithCommas = to_string(value);int insertPosition = numWithCommas.length() - 3;while (insertPosition > 0) {numWithCommas.insert(insertPosition, ",");insertPosition-=3;}return numWithCommas;}
 // inline string strip(string s){int i=0;while(i<s.size()){if(isspace(s[i]))i++;else break;}s.erase(0,i);i = s.size()-1;while(i>=0){if(isspace(s[i]))i--;else break;}s.erase(i+1,s.size()-i-1);return s;}
+// template <typename T> int sgn(T val) {return (T(0) < val) - (val < T(0));}
 
 //errors
 #define db(x) cerr << #x << " = " << (x) << "\n";
@@ -122,31 +123,32 @@ inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPo
 int dx[]={1,0,-1,0};
 int dy[]={0,1,0,-1};*/
 
-#define MAX 12
+#define MAX 103
 
-int memo[202][22];
-int dress[22][22];
-int N,M,C;
+vector<pii>Wolf[MAX];
+int grid[MAX][MAX];
+int wolfCount = 0;
+int dp[MAX];
 
-
-int solveRecursion(int moneyLeft, int currentDress)
+int eatPig(int idx)
 {
-	if(moneyLeft<0)
-		return -INF;
-	if(currentDress==C){
-		return M-moneyLeft;
+	if(idx==wolfCount)
+		return 0 ;
+	int mx = 0;
+	if(dp[idx]!=-1)
+		return dp[idx];
+	for(int i=0;i<Wolf[idx].size();i++){
+		pii curPig = Wolf[idx][i];
+		// cout<<"ASD "<<curPig.fi<<" "<<curPig.se<<endl;
+		if(grid[curPig.fi][curPig.se]==1){
+			grid[curPig.fi][curPig.se] = 0;
+			mx = max(mx, 1+eatPig(idx+1));
+			grid[curPig.fi][curPig.se] = 1;
+		}
 	}
-	int &ans=memo[moneyLeft][currentDress];
-	if(ans>=0)
-		return ans;
-	
-	for(int i=1;i<=dress[currentDress][0];i++){
-		ans = max(ans,solveRecursion(moneyLeft-dress[currentDress][i],currentDress+1));
-	}
-
-	return ans;
+	mx = max(mx, eatPig(idx+1));
+	return dp[idx] = mx;
 }
-
 
 
 int main()
@@ -164,28 +166,45 @@ the following lines in main function.*/
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
 
-	
-	cin>>N;
-
-	while(N--){
-		ms(memo,-1);
-		cin>>M>>C;
-		FOR(i,0,C){
-			cin>>dress[i][0];
-			FOR(j,1,dress[i][0]+1)
-				cin>>dress[i][j];
+	int n,m;
+	char ch;
+	cin>>n>>m;
+	FOR(i,0,n)
+		FOR(j,0,m){
+			cin>>ch;
+			if(ch=='.')
+				grid[i][j] = 0;
+			else if(ch=='P')
+				grid[i][j] = 1;
+			else 
+				grid[i][j] = -1;
 		}
-
-		int targetMoney = solveRecursion(M,0);
-
-		// cout<<memo[M][0]<<endl;
-
-		if(targetMoney<0)
-			cout<<"no solution"<<endl;
-		else
-			cout<<targetMoney<<endl;
-
+	
+	
+	FOR(i,0,n){
+		FOR(j,0,m){
+			if(grid[i][j]==-1){
+				if(i-1>=0 && grid[i-1][j]==1)
+					Wolf[wolfCount].pb(mp(i-1,j));
+				if(i+1<n && grid[i+1][j]==1)
+					Wolf[wolfCount].pb(mp(i+1,j));
+				if(j-1>=0 && grid[i][j-1]==1)
+					Wolf[wolfCount].pb(mp(i,j-1));
+				if(j+1<m && grid[i][j+1]==1)
+					Wolf[wolfCount].pb(mp(i,j+1));
+				
+				wolfCount++;
+			}
+		}
 	}
+/* 
+	FOR(i,0,wolfCount)
+		cout<<Wolf[i].size()<<endl; */
+	ms(dp,-1);
+	cout<<eatPig(0)<<endl;
+
+
+	
 	
 
 	return 0;

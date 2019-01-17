@@ -95,6 +95,7 @@ const ld EPS = 1e-6;
 // inline string customStrip(string in,string delim){string ret = "";for(int i=0;i<in.size();i++){if(delim.find(in[i],0)==std::string::npos)ret+=in[i];}return ret;}
 // inline string commaSeparate(long long value){string numWithCommas = to_string(value);int insertPosition = numWithCommas.length() - 3;while (insertPosition > 0) {numWithCommas.insert(insertPosition, ",");insertPosition-=3;}return numWithCommas;}
 // inline string strip(string s){int i=0;while(i<s.size()){if(isspace(s[i]))i++;else break;}s.erase(0,i);i = s.size()-1;while(i>=0){if(isspace(s[i]))i--;else break;}s.erase(i+1,s.size()-i-1);return s;}
+// template <typename T> int sgn(T val) {return (T(0) < val) - (val < T(0));}
 
 //errors
 #define db(x) cerr << #x << " = " << (x) << "\n";
@@ -123,31 +124,32 @@ int dx[]={1,0,-1,0};
 int dy[]={0,1,0,-1};*/
 
 #define MAX 12
+int coin[7] = {1,5,10,25,50};
+ll dp[MAX][30005];
 
-int memo[202][22];
-int dress[22][22];
-int N,M,C;
-
-
-int solveRecursion(int moneyLeft, int currentDress)
+ll countWays(int idx, int remain)
 {
-	if(moneyLeft<0)
-		return -INF;
-	if(currentDress==C){
-		return M-moneyLeft;
-	}
-	int &ans=memo[moneyLeft][currentDress];
-	if(ans>=0)
-		return ans;
+	if(remain==0)
+		return 1;
+	if(idx==5||remain<0)
+		return 0;
 	
-	for(int i=1;i<=dress[currentDress][0];i++){
-		ans = max(ans,solveRecursion(moneyLeft-dress[currentDress][i],currentDress+1));
+	if(dp[idx][remain]!=-1)
+		return dp[idx][remain];
+
+	ll ways = 0;
+	if(remain>=coin[idx]){
+		for(int i=1;;i++){
+			if(coin[idx]*i<=remain)
+				ways+=countWays(idx+1,remain-coin[idx]*i);
+			else
+				break;
+		}
 	}
-
-	return ans;
+	ways+=countWays(idx+1,remain);
+	
+	return dp[idx][remain] = ways;
 }
-
-
 
 int main()
 {
@@ -164,27 +166,12 @@ the following lines in main function.*/
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
 
-	
-	cin>>N;
-
-	while(N--){
-		ms(memo,-1);
-		cin>>M>>C;
-		FOR(i,0,C){
-			cin>>dress[i][0];
-			FOR(j,1,dress[i][0]+1)
-				cin>>dress[i][j];
-		}
-
-		int targetMoney = solveRecursion(M,0);
-
-		// cout<<memo[M][0]<<endl;
-
-		if(targetMoney<0)
-			cout<<"no solution"<<endl;
-		else
-			cout<<targetMoney<<endl;
-
+	int n;
+	ms(dp,-1);
+	countWays(0,7490);
+	while(cin>>n){
+		ll ways = countWays(0,n);
+		cout<<ways<<endl;
 	}
 	
 

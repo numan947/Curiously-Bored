@@ -90,11 +90,12 @@ const ld EPS = 1e-6;
 
 //some helper functions for input processing
 
-// inline void tokenize(string str,vector<string> &tokens, string delim){ tokens.clear();size_t s = str.find_first_not_of(delim), e=s; while(s!=std::string::npos){e=str.find(delim,s);tokens.push_back(str.substr(s,e-s));s=str.find_first_not_of(delim,e);}}
+inline void tokenize(string str,vector<string> &tokens, string delim){ tokens.clear();size_t s = str.find_first_not_of(delim), e=s; while(s!=std::string::npos){e=str.find(delim,s);tokens.push_back(str.substr(s,e-s));s=str.find_first_not_of(delim,e);}}
 // inline bool isPalindrome(string str){for(int i=0;i<(str.size())/2;i++)if(str[i]!=str[str.size()-1-i])return false;return true;}
 // inline string customStrip(string in,string delim){string ret = "";for(int i=0;i<in.size();i++){if(delim.find(in[i],0)==std::string::npos)ret+=in[i];}return ret;}
 // inline string commaSeparate(long long value){string numWithCommas = to_string(value);int insertPosition = numWithCommas.length() - 3;while (insertPosition > 0) {numWithCommas.insert(insertPosition, ",");insertPosition-=3;}return numWithCommas;}
 // inline string strip(string s){int i=0;while(i<s.size()){if(isspace(s[i]))i++;else break;}s.erase(0,i);i = s.size()-1;while(i>=0){if(isspace(s[i]))i--;else break;}s.erase(i+1,s.size()-i-1);return s;}
+// template <typename T> int sgn(T val) {return (T(0) < val) - (val < T(0));}
 
 //errors
 #define db(x) cerr << #x << " = " << (x) << "\n";
@@ -122,36 +123,78 @@ inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPo
 int dx[]={1,0,-1,0};
 int dy[]={0,1,0,-1};*/
 
-#define MAX 12
+#define MAX 120
+int rr,cc;
 
-int memo[202][22];
-int dress[22][22];
-int N,M,C;
+string cell[1200][18380];
+bool vis[1200][18380];
+ll dp[1200][18380];
 
-
-int solveRecursion(int moneyLeft, int currentDress)
+int FromBase26ToBase10(string s)
 {
-	if(moneyLeft<0)
-		return -INF;
-	if(currentDress==C){
-		return M-moneyLeft;
+	int cur = 0;
+	int total = 0;
+	for(int i=s.size()-1;i>=0;i--){
+		total+=(s[i]-'A'+1)*pow(26,cur);
+		cur++;
 	}
-	int &ans=memo[moneyLeft][currentDress];
-	if(ans>=0)
-		return ans;
-	
-	for(int i=1;i<=dress[currentDress][0];i++){
-		ans = max(ans,solveRecursion(moneyLeft-dress[currentDress][i],currentDress+1));
-	}
+	// cout<<total<<endl;
+	return total;
+}
 
-	return ans;
+bool is_number(string s)
+{	
+	int i=0;
+	if(s[0]=='-')
+		i=1;
+	for(;i<s.size();i++)
+		if(!isdigit(s[i]))
+			return false;
+	return true;
 }
 
 
 
-int main()
+ll calculateVal(int r, int c)
 {
-/*The standard C++ I/O functions (cin/cout) flush the buffer 
+	
+	if(vis[r][c])
+		return dp[r][c];
+	vis[r][c] = 1;
+
+	if(is_number(cell[r][c])){
+		return dp[r][c] = stoi(cell[r][c]);
+	}
+
+	string currentFormula = cell[r][c];
+	currentFormula.erase(currentFormula.begin());
+
+	vector<string>toks;
+
+	tokenize(currentFormula,toks,"+");
+	ll tmp = 0;
+	FOR(i,0,toks.size()){
+		int cup = 0;
+		while(cup<toks[i].size() && !isdigit(toks[i][cup]))
+			cup++;
+		
+		string CC = toks[i].substr(0,cup);
+		string RR = toks[i].substr(cup);
+		// cout<<RR<<" "<<CC<<endl;
+		int RRR = stoi(RR);
+		int CCC = FromBase26ToBase10(CC);
+		tmp+=calculateVal(RRR-1,CCC-1);
+	}
+	
+
+	return dp[r][c] = tmp;
+}
+
+
+
+
+int main()
+{ /*The standard C++ I/O functions (cin/cout) flush the buffer 
 on every next I/O call which unncecessarily increase I/O time.
 For enhancing C++ I/O speed,you can either use C’s standard I/O
 function (scanf/printf) instead of (cin/cout) or you can write
@@ -162,31 +205,41 @@ the following lines in main function.*/
 	cout.tie(0);
 	
 	freopen("input.txt", "r", stdin);
-	// freopen("output.txt", "w", stdout);
+	freopen("output.txt", "w", stdout);
+	string tmp;
+	int ss;
+	cin>>ss;
 
-	
-	cin>>N;
-
-	while(N--){
-		ms(memo,-1);
-		cin>>M>>C;
-		FOR(i,0,C){
-			cin>>dress[i][0];
-			FOR(j,1,dress[i][0]+1)
-				cin>>dress[i][j];
+	while(ss--){
+		cin>>cc>>rr;
+		FOR(i,0,rr)
+			FOR(j,0,cc)
+				cin>>cell[i][j];
+		
+		// FOR(i,0,rr){
+		// 	FOR(j,0,cc)
+		// 		cout<<cell[i][j]<<" ";
+		// 	cout<<endl;
+		// }
+		ms(vis,0);
+		
+		FOR(i,0,rr){
+			FOR(j,0,cc){
+				if(is_number(cell[i][j]))
+					dp[i][j] = stoi(cell[i][j]);
+				else
+					calculateVal(i,j);
+			}
 		}
 
-		int targetMoney = solveRecursion(M,0);
-
-		// cout<<memo[M][0]<<endl;
-
-		if(targetMoney<0)
-			cout<<"no solution"<<endl;
-		else
-			cout<<targetMoney<<endl;
-
+		FOR(i,0,rr){
+			cout<<dp[i][0];
+			FOR(j,1,cc)
+				cout<<" "<<dp[i][j];
+				
+			cout<<endl;
+		} 
 	}
-	
 
 	return 0;
 }

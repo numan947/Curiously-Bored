@@ -95,6 +95,7 @@ const ld EPS = 1e-6;
 // inline string customStrip(string in,string delim){string ret = "";for(int i=0;i<in.size();i++){if(delim.find(in[i],0)==std::string::npos)ret+=in[i];}return ret;}
 // inline string commaSeparate(long long value){string numWithCommas = to_string(value);int insertPosition = numWithCommas.length() - 3;while (insertPosition > 0) {numWithCommas.insert(insertPosition, ",");insertPosition-=3;}return numWithCommas;}
 // inline string strip(string s){int i=0;while(i<s.size()){if(isspace(s[i]))i++;else break;}s.erase(0,i);i = s.size()-1;while(i>=0){if(isspace(s[i]))i--;else break;}s.erase(i+1,s.size()-i-1);return s;}
+// template <typename T> int sgn(T val) {return (T(0) < val) - (val < T(0));}
 
 //errors
 #define db(x) cerr << #x << " = " << (x) << "\n";
@@ -122,31 +123,84 @@ inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPo
 int dx[]={1,0,-1,0};
 int dy[]={0,1,0,-1};*/
 
-#define MAX 12
+#define MAX 105
 
-int memo[202][22];
-int dress[22][22];
-int N,M,C;
+//pair<ll,ll> dp[MAX][10010][MAX];
+//bool vis[MAX][10010][MAX];
+int coin[MAX];
+int priceToPay,n;
 
-
-int solveRecursion(int moneyLeft, int currentDress)
+/*
+pair<ll,ll>selectMin(pair<ll,ll>p1,pair<ll,ll>p2)
 {
-	if(moneyLeft<0)
-		return -INF;
-	if(currentDress==C){
-		return M-moneyLeft;
-	}
-	int &ans=memo[moneyLeft][currentDress];
-	if(ans>=0)
-		return ans;
-	
-	for(int i=1;i<=dress[currentDress][0];i++){
-		ans = max(ans,solveRecursion(moneyLeft-dress[currentDress][i],currentDress+1));
+	if(p1.fi>p2.fi)
+		return p2;
+	else if(p1.fi<p2.fi)
+		return p1;
+	else if(p1.fi==p2.fi){
+		if(p1.se>p2.se)
+			return p2;
+		else if(p1.se<=p2.se)
+			return p1;
+		else
+			return mp(LINF,LINF);
 	}
 
-	return ans;
+}
+pair<ll,ll> payMoney(int idx,int given, int coinUsed)
+{
+	// cout<<given<<" "<<coinUsed<<endl;
+	if(given>=priceToPay)
+		return mp(given,coinUsed);
+	if(idx==n)
+		return mp(LINF,LINF);
+	
+	if(vis[idx][given][coinUsed])
+		return dp[idx][given][coinUsed];
+	
+	pair<ll,ll>t1 = mp(LINF,LINF),t2=mp(LINF,LINF);
+	
+	t1 = payMoney(idx+1,given+coin[idx],coinUsed+1);
+	
+	t2 =  payMoney(idx+1,given,coinUsed);
+
+	vis[idx][given][coinUsed] = 1;
+	return dp[idx][given][coinUsed] = selectMin(t1,t2);
+} */
+
+ll dp[MAX][10010];
+ll ans;
+ll findMinMoney(int idx, int currentMoney)
+{
+	if(currentMoney>=priceToPay)
+		return currentMoney;
+	if(idx==n)
+		return LINF;
+	
+	if(dp[idx][currentMoney]!=-1)
+		return dp[idx][currentMoney];
+
+	ll t1 = findMinMoney(idx+1,currentMoney+coin[idx]);
+	ll t2 = findMinMoney(idx+1,currentMoney);
+
+	return dp[idx][currentMoney] = min(t1,t2);
 }
 
+
+ll findMinCoin(int idx, int currentMoney)
+{
+	if(currentMoney==ans)
+		return 0;
+	if(currentMoney>priceToPay)
+		return INF;
+	if(idx==n)
+		return INF;
+	
+	if(dp[idx][currentMoney]!=-1)
+		return dp[idx][currentMoney];
+	
+	return dp[idx][currentMoney] = min(1+findMinCoin(idx+1,currentMoney+coin[idx]),findMinCoin(idx+1,currentMoney));
+}
 
 
 int main()
@@ -162,28 +216,28 @@ the following lines in main function.*/
 	cout.tie(0);
 	
 	freopen("input.txt", "r", stdin);
-	// freopen("output.txt", "w", stdout);
+	freopen("output.txt", "w", stdout);
 
-	
-	cin>>N;
+	int tc;
+	cin>>tc;
 
-	while(N--){
-		ms(memo,-1);
-		cin>>M>>C;
-		FOR(i,0,C){
-			cin>>dress[i][0];
-			FOR(j,1,dress[i][0]+1)
-				cin>>dress[i][j];
-		}
+	while(tc--){
+		cin>>priceToPay;
+		cin>>n;
+		FOR(i,0,n)
+			cin>>coin[i];
+		
+		// ms(vis,0);
+		// pair<ll,ll>moneyPaid = payMoney(0,0,0);
+		// cout<<moneyPaid.fi<<" "<<moneyPaid.se<<endl;
+		
+		ms(dp,-1);
+		ans = findMinMoney(0,0);
+		cout<<ans;
+		ms(dp,-1);
+		cout<<" "<<findMinCoin(0,0)<<endl;
 
-		int targetMoney = solveRecursion(M,0);
 
-		// cout<<memo[M][0]<<endl;
-
-		if(targetMoney<0)
-			cout<<"no solution"<<endl;
-		else
-			cout<<targetMoney<<endl;
 
 	}
 	

@@ -95,6 +95,7 @@ const ld EPS = 1e-6;
 // inline string customStrip(string in,string delim){string ret = "";for(int i=0;i<in.size();i++){if(delim.find(in[i],0)==std::string::npos)ret+=in[i];}return ret;}
 // inline string commaSeparate(long long value){string numWithCommas = to_string(value);int insertPosition = numWithCommas.length() - 3;while (insertPosition > 0) {numWithCommas.insert(insertPosition, ",");insertPosition-=3;}return numWithCommas;}
 // inline string strip(string s){int i=0;while(i<s.size()){if(isspace(s[i]))i++;else break;}s.erase(0,i);i = s.size()-1;while(i>=0){if(isspace(s[i]))i--;else break;}s.erase(i+1,s.size()-i-1);return s;}
+// template <typename T> int sgn(T val) {return (T(0) < val) - (val < T(0));}
 
 //errors
 #define db(x) cerr << #x << " = " << (x) << "\n";
@@ -124,31 +125,6 @@ int dy[]={0,1,0,-1};*/
 
 #define MAX 12
 
-int memo[202][22];
-int dress[22][22];
-int N,M,C;
-
-
-int solveRecursion(int moneyLeft, int currentDress)
-{
-	if(moneyLeft<0)
-		return -INF;
-	if(currentDress==C){
-		return M-moneyLeft;
-	}
-	int &ans=memo[moneyLeft][currentDress];
-	if(ans>=0)
-		return ans;
-	
-	for(int i=1;i<=dress[currentDress][0];i++){
-		ans = max(ans,solveRecursion(moneyLeft-dress[currentDress][i],currentDress+1));
-	}
-
-	return ans;
-}
-
-
-
 int main()
 {
 /*The standard C++ I/O functions (cin/cout) flush the buffer 
@@ -163,30 +139,41 @@ the following lines in main function.*/
 	
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
-
+	string s;
+	cin>>s;
 	
-	cin>>N;
+	int fo=-1,lc=-1,fcol=-1,lcol=-1;
 
-	while(N--){
-		ms(memo,-1);
-		cin>>M>>C;
-		FOR(i,0,C){
-			cin>>dress[i][0];
-			FOR(j,1,dress[i][0]+1)
-				cin>>dress[i][j];
-		}
+	string ans = "";
 
-		int targetMoney = solveRecursion(M,0);
-
-		// cout<<memo[M][0]<<endl;
-
-		if(targetMoney<0)
-			cout<<"no solution"<<endl;
-		else
-			cout<<targetMoney<<endl;
-
+	FOR(i,0,s.size()){
+		if(s[i]=='['&&fo==-1)
+			fo=i;
+		else if(s[i]==':'&&fo!=-1 &&fcol==-1)
+			fcol = i;
+		
+		if(fo>=0 && fcol >=0)
+			break;
 	}
+
+	FORd(i,s.size(),0){
+		if(s[i]==']'&&lc==-1)
+			lc = i;
+		else if(s[i]==':'&&lc!=-1 &&lcol==-1)
+			lcol=i;
+		if(lc>=0&&lcol>=0)
+			break;
+	}
+
+	if(fo<fcol && fcol<lcol && lcol<lc){
+		int ans = 4;
+		for(int i=fcol+1;i<lcol;i++)
+			if(s[i]=='|')ans++;
+		cout<<ans<<endl;
+	}else
+		cout<<-1<<endl;
 	
+	// cout<<fo<<" "<<lc<<" "<<fcol<<" "<<lcol<<endl;
 
 	return 0;
 }

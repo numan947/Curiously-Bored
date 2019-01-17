@@ -95,6 +95,7 @@ const ld EPS = 1e-6;
 // inline string customStrip(string in,string delim){string ret = "";for(int i=0;i<in.size();i++){if(delim.find(in[i],0)==std::string::npos)ret+=in[i];}return ret;}
 // inline string commaSeparate(long long value){string numWithCommas = to_string(value);int insertPosition = numWithCommas.length() - 3;while (insertPosition > 0) {numWithCommas.insert(insertPosition, ",");insertPosition-=3;}return numWithCommas;}
 // inline string strip(string s){int i=0;while(i<s.size()){if(isspace(s[i]))i++;else break;}s.erase(0,i);i = s.size()-1;while(i>=0){if(isspace(s[i]))i--;else break;}s.erase(i+1,s.size()-i-1);return s;}
+// template <typename T> int sgn(T val) {return (T(0) < val) - (val < T(0));}
 
 //errors
 #define db(x) cerr << #x << " = " << (x) << "\n";
@@ -122,32 +123,59 @@ inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPo
 int dx[]={1,0,-1,0};
 int dy[]={0,1,0,-1};*/
 
-#define MAX 12
+#define MAX 105
+int grid[MAX][MAX];
+int dp[MAX][MAX];
+int par[MAX][MAX];
+int rr,cc;
 
-int memo[202][22];
-int dress[22][22];
-int N,M,C;
 
-
-int solveRecursion(int moneyLeft, int currentDress)
+int findMinPath(int curR, int curC)
 {
-	if(moneyLeft<0)
-		return -INF;
-	if(currentDress==C){
-		return M-moneyLeft;
+	if(curC==cc-1){
+		return grid[curR][curC];
 	}
-	int &ans=memo[moneyLeft][currentDress];
-	if(ans>=0)
-		return ans;
+	if(dp[curR][curC]!=-1)
+		return dp[curR][curC];
+
+	int minC = INF;
+	int tmpR,tmpC,curLexR;
 	
-	for(int i=1;i<=dress[currentDress][0];i++){
-		ans = max(ans,solveRecursion(moneyLeft-dress[currentDress][i],currentDress+1));
+	
+	tmpR = (((curR-1)%rr)+rr)%rr;
+	tmpC = findMinPath(tmpR,curC+1);
+	curLexR = tmpR;
+	if(tmpC<minC){
+		minC = tmpC;
+		par[curR][curC] = 1;
 	}
 
-	return ans;
+	tmpR = curR;
+	tmpC = findMinPath(tmpR,curC+1);
+	if(tmpC<minC){
+		minC = tmpC;
+		par[curR][curC] = 2;
+		curLexR = tmpR;
+	}
+	else if(minC==tmpC && tmpR<curLexR){
+		par[curR][curC] = 2;
+		curLexR = tmpR;
+	}
+
+	tmpR = (((curR+1)%rr)+rr)%rr;
+	tmpC = findMinPath(tmpR,curC+1);
+	if(tmpC<minC){
+		minC = tmpC;
+		par[curR][curC] = 3;
+		curLexR = tmpR;
+	}
+	else if(tmpC==minC && tmpR<curLexR){
+		par[curR][curC] = 3;
+		curLexR = tmpR;
+	}
+
+	return dp[curR][curC] = minC + grid[curR][curC];
 }
-
-
 
 int main()
 {
@@ -162,29 +190,51 @@ the following lines in main function.*/
 	cout.tie(0);
 	
 	freopen("input.txt", "r", stdin);
-	// freopen("output.txt", "w", stdout);
+	freopen("output.txt", "w", stdout);
 
-	
-	cin>>N;
-
-	while(N--){
-		ms(memo,-1);
-		cin>>M>>C;
-		FOR(i,0,C){
-			cin>>dress[i][0];
-			FOR(j,1,dress[i][0]+1)
-				cin>>dress[i][j];
+	while(cin>>rr>>cc){
+		FOR(i,0,rr)
+			FOR(j,0,cc)
+				cin>>grid[i][j];
+		ms(par,0);
+		ms(dp,-1);
+		int minPath = INF;
+		int sr = -1;
+		for(int i=0;i<rr;i++){
+			
+			int tmpPath = findMinPath(i,0);
+			if(tmpPath<minPath){
+				minPath = tmpPath;
+				sr = i;
+			}
 		}
 
-		int targetMoney = solveRecursion(M,0);
+		int sc = 0;
+		vector<int>vv;
+		while(sc<cc)
+		{
+			vv.pb(sr+1);
+			if(par[sr][sc]==1){
+				sr--;
+				sr= ((sr%rr)+rr)%rr;
+			}
+			else if(par[sr][sc]==2){
+				sr = sr;
+			}
+			else if(par[sr][sc]==3){
+				sr++;
+				sr= ((sr%rr)+rr)%rr;
+			}
+			sc++;
+		}
+		cout<<vv[0];
+		FOR(i,1,vv.size())
+			cout<<" "<<vv[i];
+		cout<<endl;
+		cout<<minPath<<endl;
 
-		// cout<<memo[M][0]<<endl;
-
-		if(targetMoney<0)
-			cout<<"no solution"<<endl;
-		else
-			cout<<targetMoney<<endl;
-
+		
+		
 	}
 	
 

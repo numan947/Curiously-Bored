@@ -95,12 +95,13 @@ const ld EPS = 1e-6;
 // inline string customStrip(string in,string delim){string ret = "";for(int i=0;i<in.size();i++){if(delim.find(in[i],0)==std::string::npos)ret+=in[i];}return ret;}
 // inline string commaSeparate(long long value){string numWithCommas = to_string(value);int insertPosition = numWithCommas.length() - 3;while (insertPosition > 0) {numWithCommas.insert(insertPosition, ",");insertPosition-=3;}return numWithCommas;}
 // inline string strip(string s){int i=0;while(i<s.size()){if(isspace(s[i]))i++;else break;}s.erase(0,i);i = s.size()-1;while(i>=0){if(isspace(s[i]))i--;else break;}s.erase(i+1,s.size()-i-1);return s;}
+// template <typename T> int sgn(T val) {return (T(0) < val) - (val < T(0));}
 
 //errors
 #define db(x) cerr << #x << " = " << (x) << "\n";
 #define endl '\n'
 
-/*
+
 //double comparisons and ops
 //d1==d2
 inline bool EQ(double d1,double d2){return fabs(d1-d2)<EPS;}
@@ -115,38 +116,50 @@ inline bool LTE(double d1,double d2){return LT(d1,d2)||EQ(d1,d2);}
 //numPosAfterDecimal={10,100,1000,10000,....}
 //Roundoff(3.56985,10000) = 3.5699
 inline double Roundoff(double val,int numPosAfterDecimal){return round(val*numPosAfterDecimal)/numPosAfterDecimal;}
-*/
+
 
 
 /*//4 directional movement
 int dx[]={1,0,-1,0};
 int dy[]={0,1,0,-1};*/
 
-#define MAX 12
+#define MAX 45
+ll dp[MAX][300][300];
+int m,S;
+pii ecoin[MAX];
 
-int memo[202][22];
-int dress[22][22];
-int N,M,C;
 
-
-int solveRecursion(int moneyLeft, int currentDress)
+ll findMinAnswer(int idx,int convV, int infoT)
 {
-	if(moneyLeft<0)
-		return -INF;
-	if(currentDress==C){
-		return M-moneyLeft;
-	}
-	int &ans=memo[moneyLeft][currentDress];
-	if(ans>=0)
-		return ans;
+	// cout<<"HOLA"<<endl;
+	double sanityCheck =sqrt(convV*convV + infoT*infoT);
+	// cout<<convV<<" "<<infoT<<endl;
+	// cout<<sanityCheck<<endl;
+	if(EQ(sanityCheck,S))
+		return 0;
+	if(GT(sanityCheck,S) || idx==m)
+		return LINF;
 	
-	for(int i=1;i<=dress[currentDress][0];i++){
-		ans = max(ans,solveRecursion(moneyLeft-dress[currentDress][i],currentDress+1));
+	if(dp[idx][convV][infoT]!=-1)
+		return dp[idx][convV][infoT];
+
+	ll minWays = LINF;
+
+	double tmp = sqrt((convV+1*ecoin[idx].fi)*(convV+1*ecoin[idx].fi )+((infoT+1*ecoin[idx].se)*(infoT+1*ecoin[idx].se)));
+
+	if(LTE(tmp,S)){
+		for(int i=1;;i++){
+			double tmp = sqrt((convV+i*ecoin[idx].fi)*(convV+i*ecoin[idx].fi )+((infoT+i*ecoin[idx].se)*(infoT+i*ecoin[idx].se)));
+			if(LTE(tmp,S))
+				minWays = min(minWays,i+findMinAnswer(idx+1,convV+i*ecoin[idx].fi,infoT+i*ecoin[idx].se));
+			else
+				break;	
+		}
 	}
+	minWays = min(minWays,findMinAnswer(idx+1,convV,infoT));
 
-	return ans;
+	return dp[idx][convV][infoT] = minWays;
 }
-
 
 
 int main()
@@ -163,28 +176,21 @@ the following lines in main function.*/
 	
 	freopen("input.txt", "r", stdin);
 	// freopen("output.txt", "w", stdout);
+	int tc;
+	cin>>tc;
 
-	
-	cin>>N;
+	while(tc--){
+		cin>>m>>S;
+		FOR(i,0,m)
+			cin>>ecoin[i].fi>>ecoin[i].se;
+		ms(dp,-1);
+		ll ways = findMinAnswer(0,0,0);
 
-	while(N--){
-		ms(memo,-1);
-		cin>>M>>C;
-		FOR(i,0,C){
-			cin>>dress[i][0];
-			FOR(j,1,dress[i][0]+1)
-				cin>>dress[i][j];
-		}
-
-		int targetMoney = solveRecursion(M,0);
-
-		// cout<<memo[M][0]<<endl;
-
-		if(targetMoney<0)
-			cout<<"no solution"<<endl;
+		if(ways==LINF)
+			cout<<"not possible"<<endl;
 		else
-			cout<<targetMoney<<endl;
-
+			cout<<ways<<endl;
+		
 	}
 	
 
