@@ -169,7 +169,7 @@ void dfs_top_ord(int u)
     }
     //all  u->v edges are explored, so add u to the list;
     //reversing the list, we can get the Topological Order
-    TopologicalOrder.push_back(i);
+    TopologicalOrder.push_back(u);
 }
 
 
@@ -263,11 +263,148 @@ void dfs_prop_check(int u)
 
 
 /**
- * Finding Articulation Points and Bridges:
+ * Finding Articulation Points and Bridges: Undirected Graph
  * 
  * Articulation Points: 
  * These are the vertices in a graph, which, if deleted,
  * makes the rest of the graph disconnected
  * 
+ * Bridges:
+ * These are the edges in a graph, which, if deleted,
+ * makes the rest of the graph disconnected
+ * 
+ * 
+ * Naive Algorithm:
+ * Run O(V+E) DFS --> count number of connected components in a the Graph, it's usually just 1
+ * 
+ * For each vertex v in V:
+ *  remove vertex v and incident edges
+ *  Run O(V+E) DFS and check if connected components increases
+ *  if yes --> vertex v is a Articulation Point, same logic can be applied to Bridges
+ * 
+ * Efficient Algorithm:
+ * 
+ * Aside from dfs_num, maintain dfs_low.
+ * 
+ * dfs_num[u] = time of first visit of u vertex, an iteration
+ * counter is enough to act as time.
+ * 
+ * dfs_low[u] = the lowest dfs_num rechable from current DFS spanning subtree of u.
+ * 
+ * Initially, dfs_num[u] = dfs_low[u] = time_of_visiting_u_for_the_first_time
+ * 
+ * So, dfs_low[u] can only be smaller if there is a back edge in the graph.
+ * 
+ * When we are in a node u, with v as its neighbour,
+ * if dfs_low[v] >= dfs_num[u] ==> u vertex is an Articualtion Point
+ * 
+ * if dfs_low[v]>dfs_num[u] ==> u-v edge is a Bridge
+ * 
+ * SPECIAL CASE: ==> Not detected by the algorithm
+ * The root of the dfs spanning tree is an Articualtion Point,
+ * only if it has more than one children in the dfs spanning tree.
  * 
 */
+
+vector<int>dfs_low;
+
+int current_time; //initially 0
+int dfsRoot; //initially the vertex that is passed as u in the function
+int rootChildren; //initially 0 before passing root to the function
+
+
+void ArticulationPointAndBridge(int u)
+{
+    dfs_low[u] = dfs_num[u] = current_time++;
+
+    for(int i=0;i<AdjList[u].size();i++){
+        pair<int,int>v = AdjList[u][i];
+
+        if(dfs_num[v.first]==UNVISITED){
+            dfs_parent[v.first] = u;
+            
+            if(dfsRoot==u)
+                rootChildren++;
+            
+            ArticulationPointAndBridge(v.first);
+
+            if(dfs_low[v.first]>=dfs_num[u]){
+                //u is an articulation point
+            }
+            if(dfs_low[v.first]>dfs_num[u]){
+                //u-v is a bridge
+            }
+            //update dfs_low[u], as the dfs_low[v.first] is the lowest we can reach from u
+            dfs_low[u] = min(dfs_low[u],dfs_low[v.first]);
+
+        }
+        else if(dfs_parent[u]!=v.first){
+            //this is the back edge, we can reach dfs_num[v.first] from u,
+            //and v.first should have smaller time
+            dfs_low[u] = min(dfs_low[u],dfs_num[v.first]);
+        }
+    }
+}
+
+
+/**
+ * SCC in Directed Graph:
+ * 
+ * Two Known Algorithms for Finding SCCs in Directed Graphs:
+ *  
+ *  1. Kosaraju
+ *  2. Tarjan
+ * 
+ * Tarjan is similar to ArticulationPoint/Bridge finding algorithm.
+ * 
+ * In addition to dfs_num and dfs_low, we keep a vector and use it as a stack.
+ * We add u to the back of the vector ==> this vector keeps track of the explored vertices.
+ * 
+ * Updating dfs_low is different from that of ArticulationPoint and Bridges:
+ * 
+ * Here we only update dfs_low, if the vertex in consideration is visited: 
+ * dfs_low[u] = min(dfs_low[u],dfs_low[v.first]) ==> only if v is already visited
+ * 
+ * Now, if we still have a vertex in the dfs spanning tre, with dfs_low[u] == dfs_num[u],
+ * then, it must be the root of an SCC.
+ * 
+ * The memebers of that SCC are found by popping the vector from end until we reach u.
+ * 
+ * */
+
+int numSCC; //initially zero
+vector<int>S; //keeps track of currently explored vertices to find out the SCC members
+vector<int>visited; //keeps track of visited, so that overlapping SCCs don't update
+void tarjanSCC(int u)
+{
+    dfs_low[u] = dfs_num[u] = current_time++;
+    S.push_back(u);
+    visited[u] = VISITED;
+    for(int i=0;i<AdjList[u].size();i++){
+        pair<int,int>v = AdjList[u][i];
+
+        //if v is not visited, visit it first
+        if(dfs_num[v.first]==UNVISITED)
+            tarjanSCC(v.first);
+        
+        //if v is visited, try to update the dfs_low[u]
+        if(visited[v.first]==VISITED)
+            dfs_low[u] = min(dfs_low[u],dfs_low[v.first]);
+        
+
+        //check if cycle is created yet, if current vertex is inside a cycle, and not the root of
+        //that cycle, dfs_num[u] != dfs_low[u], otherwise, dfs_low[u] == dfs_num[u], as dfs explores
+        //all outgoing edges of the node
+
+        if(dfs_low[u]==dfs_num[u]){
+
+            while(1){
+                int v = S.back();
+                visited[v] = UNVISITED;
+                S.pop_back();
+                if(u==v)
+                    break;
+            }
+        }
+    }
+}
