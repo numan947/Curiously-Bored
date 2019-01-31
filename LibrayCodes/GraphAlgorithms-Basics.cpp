@@ -63,16 +63,19 @@ void dfs(int u)
 
 //d[v] = contains distance from a source node u
 vector<int>dst;
+vector<int>bfs_parent;
 //number of nodes in the graph
 int N;
 
 //s is the source vertex
 void bfs(int s)
 {
+    bfs_parent.assign(N,-1);
     dst.assign(N,INF);
     queue<int>q;
 
     dst[s] = 0;
+    bfs_parent[s] = s;
     q.push(s);
 
     while(!q.empty())
@@ -86,6 +89,7 @@ void bfs(int s)
             pair<int,int> v = AdjList[u][j];
             
             if(dst[v.first]==INF){
+                bfs_parent[v.first] = u;
                 dst[v.first] = 1+ dst[u];
                 q.push(v.first);
             }
