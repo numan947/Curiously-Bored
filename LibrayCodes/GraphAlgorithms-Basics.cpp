@@ -162,6 +162,8 @@ vector<int>TopologicalOrder;
 
 void dfs_top_ord(int u)
 {
+    //Tarjan's Simplified TopSort Algorithm
+
     dfs_num[u]= VISITED;
 
     for(int i=0;i<AdjList[u].size();i++)
@@ -175,6 +177,45 @@ void dfs_top_ord(int u)
     //reversing the list, we can get the Topological Order
     TopologicalOrder.push_back(u);
 }
+
+//kahn's algorithm can also detect cycle in graph
+map<int,int>InDegree; //keeps track of the InDegrees
+
+void topsort_kahn()
+{
+    // may need priority Q, if condition like this is given:
+    // In the case there is no relation between two beverages Dilbert should start drinking the one that 
+    // appears first in the input
+    queue<int>q;
+    for(int i=0;i<N;i++){
+        if(!InDegree[i]){
+            q.push(i);
+            
+        }
+    }
+
+    int cnt = 0;//keeps track of number of visited vertices
+
+    while(!q.empty()){
+        int u = q.front();
+        q.pop();
+
+        TopologicalOrder.push_back(u);
+        cnt++;
+        for(int i=0;i<AdjList[u].size();i++){
+            int v = AdjList[u][i].first;
+            if(--InDegree[v]==0){
+                q.push(v);
+            }
+        }
+    }
+
+    if(cnt!=N){
+        //There is a cycle in the graph
+    }
+
+}
+
 
 
 /**

@@ -5,6 +5,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+/*******************NOT MY CODE**********************/
 typedef vector<int> vi;
 
 vector<vi> AdjList;
